@@ -50,3 +50,10 @@ tracked as future phases, not part of this repo yet.
 
 Kotlin, Jetpack Compose, Material 3, Navigation Compose, Room, Kotlin
 Coroutines. Min SDK 26 (Android 8.0+).
+
+## Web edition
+
+The same Phase 1 feature set is also available as a browser-based
+webapp with a pure-Python (standard library only) backend — see
+[`web/README.md`](web/README.md). Useful if you want to try the app
+in a browser without setting up Android Studio first.

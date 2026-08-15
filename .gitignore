@@ -19,3 +19,8 @@ local.properties
 *.aab
 *.ap_
 *.dex
+
+# Web edition — local runtime data
+web/data/*.db
+__pycache__/
+*.pyc

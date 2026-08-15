@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ZIMStudy AI</title>
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ONBOARDING -->
+  <section id="screen-onboarding" class="screen">
+    <div class="card">
+      <h1>LET'S BUILD YOUR STUDY SYSTEM</h1>
+      <p class="muted">A few details to set up your academic profile.</p>
+      <form id="onboarding-form">
+        <label>Your name<input type="text" id="ob-name" required /></label>
+        <label>School (optional)<input type="text" id="ob-school" /></label>
+        <label>Grade / Form<input type="text" id="ob-grade" /></label>
+        <label>Examination board<input type="text" id="ob-board" value="ZIMSEC" /></label>
+        <label>Examination year<input type="text" id="ob-year" /></label>
+        <button type="submit" class="btn primary full">Start</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section id="screen-dashboard" class="screen hidden">
+    <header class="topbar">
+      <h1 id="welcome-text">Welcome back</h1>
+      <nav>
+        <button class="btn" data-nav="subjects">Manage Subjects</button>
+      </nav>
+    </header>
+
+    <div class="card" id="exam-card">
+      <div class="label">NEXT EXAM</div>
+      <div id="exam-info" class="muted">No exam dates added yet.</div>
+      <form id="exam-form" class="inline-form">
+        <input type="text" id="exam-subject" placeholder="Subject" required />
+        <input type="text" id="exam-paper" placeholder="Paper #" />
+        <input type="date" id="exam-date" required />
+        <button type="submit" class="btn">Add exam</button>
+      </form>
+    </div>
+
+    <h2>Your Subjects</h2>
+    <div id="subjects-list" class="subject-grid"></div>
+  </section>
+
+  <!-- SUBJECTS -->
+  <section id="screen-subjects" class="screen hidden">
+    <button class="btn back" data-nav="dashboard">&larr; Back</button>
+    <h1>Manage Subjects</h1>
+    <form id="subject-form" class="inline-form">
+      <input type="text" id="new-subject" placeholder="Add a subject" required />
+      <button type="submit" class="btn primary">Add</button>
+    </form>
+    <ul id="subject-manage-list" class="manage-list"></ul>
+  </section>
+
+  <!-- TIMER -->
+  <section id="screen-timer" class="screen hidden">
+    <div class="timer-wrap">
+      <div id="timer-subject" class="muted"></div>
+      <div id="timer-topic"></div>
+      <div id="timer-clock">00:00</div>
+      <div class="timer-controls">
+        <button class="btn" id="timer-pause">Pause</button>
+        <button class="btn primary" id="timer-complete">Complete Session</button>
+      </div>
+      <button class="btn back" id="timer-cancel">Cancel</button>
+    </div>
+  </section>
+
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>
