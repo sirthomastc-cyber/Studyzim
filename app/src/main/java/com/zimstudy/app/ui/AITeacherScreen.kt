@@ -3,10 +3,12 @@ package com.zimstudy.app.ui
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.zimstudy.app.StudyViewModel
 import com.zimstudy.app.ai.AIMode
 import com.zimstudy.app.ai.AIMessage
 import com.zimstudy.app.ai.OfflineAIService
@@ -15,8 +17,9 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun AITeacherScreen() {
-
+fun AITeacherScreen(
+    viewModel: StudyViewModel
+) {
 
     var question by remember {
         mutableStateOf("")
@@ -26,6 +29,14 @@ fun AITeacherScreen() {
     var selectedMode by remember {
         mutableStateOf(AIMode.TEACH)
     }
+
+
+    var selectedSubject by remember {
+        mutableStateOf("General")
+    }
+
+
+    val subjects by viewModel.subjects.collectAsState()
 
 
     val messages = remember {
@@ -39,8 +50,9 @@ fun AITeacherScreen() {
     val ai = OfflineAIService()
 
 
+
     val context = StudyContext(
-        subject = "General",
+        subject = selectedSubject,
         level = "ZIMSEC O-Level",
         topic = "Current Topic"
     )
@@ -65,6 +77,45 @@ fun AITeacherScreen() {
         )
 
 
+        Text(
+            "Choose Subject: $selectedSubject"
+        )
+
+
+        LazyRow {
+
+            items(subjects) { subject ->
+
+
+                Button(
+                    onClick = {
+                        selectedSubject = subject.name
+                    },
+                    modifier = Modifier.padding(4.dp)
+                ){
+
+                    Text(subject.name)
+
+                }
+
+
+            }
+
+        }
+
+
+
+        Spacer(
+            Modifier.height(10.dp)
+        )
+
+
+
+        Text(
+            "Choose Mode"
+        )
+
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -76,7 +127,9 @@ fun AITeacherScreen() {
                     selectedMode = AIMode.TEACH
                 }
             ){
+
                 Text("Teach")
+
             }
 
 
@@ -86,7 +139,9 @@ fun AITeacherScreen() {
                     selectedMode = AIMode.EXAM
                 }
             ){
+
                 Text("Exam")
+
             }
 
 
@@ -96,7 +151,9 @@ fun AITeacherScreen() {
                     selectedMode = AIMode.EXPLAIN_MISTAKE
                 }
             ){
+
                 Text("Mistake")
+
             }
 
 
@@ -126,15 +183,21 @@ fun AITeacherScreen() {
                         .padding(5.dp)
                 ){
 
+
                     Text(
+
+                        text =
                         if(message.fromUser)
                             "You:\n${message.text}"
                         else
                             "AI Teacher:\n${message.text}",
 
+
                         modifier =
                         Modifier.padding(12.dp)
+
                     )
+
 
                 }
 
@@ -143,6 +206,7 @@ fun AITeacherScreen() {
 
 
         }
+
 
 
 
@@ -185,9 +249,7 @@ fun AITeacherScreen() {
                     if(question.isNotBlank()){
 
 
-                        val userQuestion =
-                            question
-
+                        val userQuestion = question
 
 
                         messages.add(
@@ -255,6 +317,5 @@ fun AITeacherScreen() {
 
 
     }
-
 
 }
