@@ -1,10 +1,13 @@
 package com.zimstudy.app.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.zimstudy.app.ai.AIMessage
 import com.zimstudy.app.ai.OfflineAIService
 import kotlinx.coroutines.launch
 
@@ -18,25 +21,24 @@ fun AITeacherScreen() {
     }
 
 
-    var answer by remember {
-        mutableStateOf(
-            "Ask me anything about your studies."
-        )
+    val messages = remember {
+        mutableStateListOf<AIMessage>()
     }
 
 
     val scope = rememberCoroutineScope()
 
-    val ai =
-        OfflineAIService()
+
+    val ai = OfflineAIService()
 
 
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp)
+            .padding(16.dp)
     ) {
+
 
 
         Text(
@@ -45,66 +47,160 @@ fun AITeacherScreen() {
         )
 
 
-        Spacer(
-            Modifier.height(20.dp)
-        )
-
-
-
-        OutlinedTextField(
-            value = question,
-            onValueChange = {
-                question = it
-            },
-            label = {
-                Text("Ask your question")
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-
 
         Spacer(
             Modifier.height(10.dp)
         )
 
 
-        Button(
 
-            onClick = {
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        ){
 
-                scope.launch {
 
-                    answer =
-                        ai.askAI(question)
+            items(messages){ message ->
+
+
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(6.dp)
+                ){
+
+
+                    Text(
+
+                        text =
+                            if(message.fromUser)
+                                "You:\n${message.text}"
+                            else
+                                "AI Teacher:\n${message.text}",
+
+
+                        modifier =
+                            Modifier.padding(12.dp)
+
+                    )
+
 
                 }
 
+
+
             }
 
-        ){
-
-            Text("Ask AI")
 
         }
 
 
 
-        Spacer(
-            Modifier.height(20.dp)
-        )
 
 
-        Card(
+        Row(
             modifier = Modifier.fillMaxWidth()
         ){
 
-            Text(
-                answer,
-                modifier = Modifier.padding(16.dp)
+
+
+            OutlinedTextField(
+
+                value = question,
+
+                onValueChange = {
+                    question = it
+                },
+
+                label = {
+                    Text("Ask your teacher")
+                },
+
+                modifier =
+                    Modifier.weight(1f)
+
             )
+
+
+
+
+            Spacer(
+                Modifier.width(8.dp)
+            )
+
+
+
+
+            Button(
+
+                onClick = {
+
+
+                    if(question.isNotBlank()){
+
+
+                        val userQuestion =
+                            question
+
+
+                        messages.add(
+
+                            AIMessage(
+                                text = userQuestion,
+                                fromUser = true
+                            )
+
+                        )
+
+
+                        question = ""
+
+
+
+                        scope.launch {
+
+
+                            val response =
+                                ai.askAI(
+                                    userQuestion
+                                )
+
+
+
+                            messages.add(
+
+                                AIMessage(
+                                    text = response,
+                                    fromUser = false
+                                )
+
+                            )
+
+
+                        }
+
+
+                    }
+
+
+
+                }
+
+            ){
+
+                Text("Send")
+
+            }
+
+
 
         }
 
+
+
     }
+
 
 }
