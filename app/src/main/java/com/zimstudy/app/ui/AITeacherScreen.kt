@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.zimstudy.app.ai.AIMode
 import com.zimstudy.app.ai.AIMessage
 import com.zimstudy.app.ai.OfflineAIService
 import kotlinx.coroutines.launch
@@ -21,9 +22,16 @@ fun AITeacherScreen() {
     }
 
 
+    var selectedMode by remember {
+        mutableStateOf(AIMode.TEACH)
+    }
+
+
+
     val messages = remember {
         mutableStateListOf<AIMessage>()
     }
+
 
 
     val scope = rememberCoroutineScope()
@@ -54,6 +62,54 @@ fun AITeacherScreen() {
 
 
 
+        Text(
+            "Choose teaching mode:"
+        )
+
+
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+
+
+            Button(
+                onClick = {
+                    selectedMode = AIMode.TEACH
+                }
+            ){
+                Text("Teach")
+            }
+
+
+            Button(
+                onClick = {
+                    selectedMode = AIMode.EXAM
+                }
+            ){
+                Text("Exam")
+            }
+
+
+            Button(
+                onClick = {
+                    selectedMode = AIMode.EXPLAIN_MISTAKE
+                }
+            ){
+                Text("Mistake")
+            }
+
+        }
+
+
+
+        Spacer(
+            Modifier.height(10.dp)
+        )
+
+
+
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -64,38 +120,30 @@ fun AITeacherScreen() {
             items(messages){ message ->
 
 
-
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(6.dp)
+                        .padding(5.dp)
                 ){
 
-
                     Text(
-
                         text =
-                            if(message.fromUser)
-                                "You:\n${message.text}"
-                            else
-                                "AI Teacher:\n${message.text}",
-
+                        if(message.fromUser)
+                            "You:\n${message.text}"
+                        else
+                            "AI Teacher:\n${message.text}",
 
                         modifier =
-                            Modifier.padding(12.dp)
-
+                        Modifier.padding(12.dp)
                     )
 
-
                 }
-
 
 
             }
 
 
         }
-
 
 
 
@@ -119,7 +167,7 @@ fun AITeacherScreen() {
                 },
 
                 modifier =
-                    Modifier.weight(1f)
+                Modifier.weight(1f)
 
             )
 
@@ -145,11 +193,13 @@ fun AITeacherScreen() {
                             question
 
 
+
                         messages.add(
 
                             AIMessage(
                                 text = userQuestion,
-                                fromUser = true
+                                fromUser = true,
+                                mode = selectedMode
                             )
 
                         )
@@ -173,7 +223,8 @@ fun AITeacherScreen() {
 
                                 AIMessage(
                                     text = response,
-                                    fromUser = false
+                                    fromUser = false,
+                                    mode = selectedMode
                                 )
 
                             )
@@ -185,7 +236,6 @@ fun AITeacherScreen() {
                     }
 
 
-
                 }
 
             ){
@@ -195,9 +245,7 @@ fun AITeacherScreen() {
             }
 
 
-
         }
-
 
 
     }
