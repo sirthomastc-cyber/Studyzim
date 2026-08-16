@@ -1,0 +1,51 @@
+package com.zimstudy.app.exam
+
+
+import com.zimstudy.app.data.ExamEntry
+import java.util.concurrent.TimeUnit
+
+
+class ExamIntelligence {
+
+
+    fun calculateUrgency(
+        exam: ExamEntry
+    ): Double {
+
+
+        val difference =
+            exam.examDateMillis -
+            System.currentTimeMillis()
+
+
+
+        val daysRemaining =
+            TimeUnit.MILLISECONDS
+                .toDays(difference)
+                .coerceAtLeast(0)
+
+
+
+        return when {
+
+
+            daysRemaining <= 7 ->
+                100.0
+
+
+            daysRemaining <= 14 ->
+                80.0
+
+
+            daysRemaining <= 30 ->
+                60.0
+
+
+            else ->
+                30.0
+
+        }
+
+    }
+
+}
