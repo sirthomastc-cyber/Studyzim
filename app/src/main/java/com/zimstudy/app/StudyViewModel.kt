@@ -11,6 +11,7 @@ import com.zimstudy.app.data.AppDatabase
 import com.zimstudy.app.data.ExamEntry
 import com.zimstudy.app.data.PerformanceRepository
 import com.zimstudy.app.data.StudentProfile
+import com.zimstudy.app.data.StudyAnalytics
 import com.zimstudy.app.data.StudySession
 import com.zimstudy.app.data.SubjectEntity
 import com.zimstudy.app.planner.AdaptivePlanner
@@ -20,21 +21,30 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
-class StudyViewModel(application: Application) : AndroidViewModel(application) {
+class StudyViewModel(application: Application) :
+    AndroidViewModel(application) {
 
 
-    private val db = AppDatabase.getInstance(application)
+    private val db =
+        AppDatabase.getInstance(application)
 
 
-    private val profileDao = db.studentProfileDao()
-    private val subjectDao = db.subjectDao()
-    private val examDao = db.examEntryDao()
-    private val sessionDao = db.studySessionDao()
+    private val profileDao =
+        db.studentProfileDao()
+
+    private val subjectDao =
+        db.subjectDao()
+
+    private val examDao =
+        db.examEntryDao()
+
+    private val sessionDao =
+        db.studySessionDao()
 
 
 
     // =========================
-    // ANALYTICS SYSTEM
+    // ANALYTICS
     // =========================
 
     private val performanceRepository =
@@ -47,49 +57,57 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
         )
 
 
+    private val studyAnalytics =
+        StudyAnalytics()
+
+
 
     // =========================
-    // AI STUDY PLANNER
+    // AI PLANNER
     // =========================
 
     private val adaptivePlanner =
         AdaptivePlanner(
-            performanceRepository
+            performanceRepository,
+            studyAnalytics
         )
 
 
 
     // =========================
-    // DATABASE DATA
+    // DATABASE FLOWS
     // =========================
 
-    val profile = profileDao.getProfile()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            null
-        )
+    val profile =
+        profileDao.getProfile()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                null
+            )
 
 
-    val subjects = subjectDao.getAllSubjects()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            emptyList()
-        )
+    val subjects =
+        subjectDao.getAllSubjects()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                emptyList()
+            )
 
 
-    val exams = examDao.getAllExams()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            emptyList()
-        )
+    val exams =
+        examDao.getAllExams()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                emptyList()
+            )
 
 
 
     // =========================
-    // CURRENT SESSION
+    // SESSION STATE
     // =========================
 
     var currentSubject by mutableStateOf("General")
@@ -179,9 +197,7 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
 
-            subjectDao.deleteSubject(
-                subject
-            )
+            subjectDao.deleteSubject(subject)
 
         }
 
@@ -232,14 +248,18 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
             sessionDao.addSession(
 
                 StudySession(
+
                     subjectName = subjectName,
+
                     topic = topic,
+
                     startedAtMillis =
                     System.currentTimeMillis(),
 
                     durationMinutes = durationMinutes,
 
                     completed = true
+
                 )
 
             )
@@ -251,7 +271,7 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
 
 
     // =========================
-    // MASTERY SYSTEM
+    // MASTERY
     // =========================
 
     fun getMastery(
@@ -277,16 +297,22 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
 
 
     // =========================
-    // ADAPTIVE AI STUDY PLAN
+    // AI STUDY MISSION
     // =========================
 
-    fun getNextStudyMission(): StudyRecommendation {
+    fun getNextStudyMission():
+            StudyRecommendation {
+
 
         return adaptivePlanner.generatePlan(
-            60
+
+            availableMinutes = 60,
+
+            sessions = emptyList()
+
         )
 
     }
 
 
-}
+    }
