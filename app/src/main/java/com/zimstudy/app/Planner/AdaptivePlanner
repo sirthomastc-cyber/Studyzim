@@ -17,15 +17,18 @@ class AdaptivePlanner(
             repository.getAllRecords()
 
 
+
         if(records.isEmpty()) {
+
 
             return StudyRecommendation(
 
                 subject = "General",
 
-                topic = "Syllabus Review",
+                topic = "Syllabus Setup",
 
-                reason = "No performance data yet. Start studying to train your AI coach.",
+                reason =
+                "AI needs study data first. Complete some sessions and quizzes.",
 
                 durationMinutes = availableMinutes
 
@@ -35,19 +38,15 @@ class AdaptivePlanner(
 
 
 
-        val weakestSubject =
-            records.minByOrNull {
+        val priority =
+            records.maxByOrNull {
 
 
-                val mastery =
-                    (
-                    it.quizAccuracy +
-                    it.pastPaperAccuracy +
+                calculatePriority(
+                    it.quizAccuracy,
+                    it.pastPaperAccuracy,
                     it.consistency
-                    ) / 3
-
-
-                mastery
+                )
 
             }
 
@@ -55,16 +54,53 @@ class AdaptivePlanner(
 
         return StudyRecommendation(
 
-            subject = weakestSubject!!.subjectName,
 
-            topic = "Priority Revision",
+            subject =
+            priority!!.subjectName,
 
-            reason = "This subject has the lowest current mastery score.",
 
-            durationMinutes = availableMinutes
+            topic =
+            "High Priority Revision",
+
+
+            reason =
+            "AI detected this as your biggest improvement opportunity.",
+
+
+            durationMinutes =
+            availableMinutes
+
 
         )
 
+
+    }
+
+
+
+
+    private fun calculatePriority(
+
+        quizAccuracy: Double,
+
+        pastPaperAccuracy: Double,
+
+        consistency: Double
+
+    ): Double {
+
+
+
+        val weakness =
+            100 - (
+                    (quizAccuracy +
+                    pastPaperAccuracy +
+                    consistency) / 3
+                    )
+
+
+
+        return weakness
 
     }
 
