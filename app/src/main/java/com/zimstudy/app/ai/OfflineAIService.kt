@@ -5,40 +5,57 @@ class OfflineAIService : AIService {
 
 
     override suspend fun askAI(
-        question: String
+
+        question: String,
+
+        context: StudyContext,
+
+        mode: AIMode
+
     ): String {
 
 
         return """
-        
+
         🤖 ZIMStudy AI Teacher
-        
+
+
+        Subject:
+        ${context.subject}
+
+
+        Topic:
+        ${context.topic}
+
+
+        Level:
+        ${context.level}
+
+
+        Mode:
+        $mode
+
+
         Question:
         $question
-        
-        I am currently in offline mode.
-        
-        Available learning modes are being prepared:
-        
-        📚 Teach Mode
-        I will explain concepts step by step.
-        
-        📝 Exam Mode
-        I will create exam-style questions.
-        
-        🔍 Mistake Mode
-        I will help identify errors.
-        
-        🎯 Revision Mode
-        I will help create a study plan.
-        
-        💡 Example Mode
-        I will provide practical examples.
-        
-        Real AI connection will allow full tutoring soon.
-        
+
+
+
+        I am currently offline.
+
+
+        When connected to the AI engine I will:
+
+        • Explain ZIMSEC concepts
+        • Generate exam questions
+        • Mark answers
+        • Identify weaknesses
+        • Create revision plans
+
+
         """.trimIndent()
 
     }
+
 
 }
