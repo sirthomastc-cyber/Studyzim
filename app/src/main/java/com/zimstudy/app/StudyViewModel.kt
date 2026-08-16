@@ -1,5 +1,6 @@
 package com.zimstudy.app
 
+
 import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,11 +12,8 @@ import com.zimstudy.app.data.AppDatabase
 import com.zimstudy.app.data.ExamEntry
 import com.zimstudy.app.data.PerformanceRepository
 import com.zimstudy.app.data.StudentProfile
-import com.zimstudy.app.data.StudyAnalytics
 import com.zimstudy.app.data.StudySession
 import com.zimstudy.app.data.SubjectEntity
-import com.zimstudy.app.planner.AdaptivePlanner
-import com.zimstudy.app.planner.StudyRecommendation
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -24,6 +22,7 @@ import kotlinx.coroutines.launch
 class StudyViewModel(
     application: Application
 ) : AndroidViewModel(application) {
+
 
 
     private val db =
@@ -48,12 +47,11 @@ class StudyViewModel(
 
 
 
-    // =========================
-    // ANALYTICS
-    // =========================
+    // Analytics
 
     private val performanceRepository =
         PerformanceRepository()
+
 
 
     private val masteryService =
@@ -62,26 +60,6 @@ class StudyViewModel(
         )
 
 
-    private val studyAnalytics =
-        StudyAnalytics()
-
-
-
-    // =========================
-    // AI PLANNER
-    // =========================
-
-    private val adaptivePlanner =
-        AdaptivePlanner(
-            performanceRepository,
-            studyAnalytics
-        )
-
-
-
-    // =========================
-    // DATABASE DATA
-    // =========================
 
     val profile =
         profileDao.getProfile()
@@ -113,16 +91,17 @@ class StudyViewModel(
 
 
 
-    // =========================
-    // CURRENT STUDY SESSION
-    // =========================
 
-    var currentSubject by mutableStateOf("General")
+    var currentSubject by
+    mutableStateOf("General")
         private set
 
 
-    var currentTopic by mutableStateOf("Study Session")
+
+    var currentTopic by
+    mutableStateOf("Study Session")
         private set
+
 
 
 
@@ -132,15 +111,14 @@ class StudyViewModel(
     ) {
 
         currentSubject = subject
+
         currentTopic = topic
 
     }
 
 
 
-    // =========================
-    // PROFILE
-    // =========================
+
 
     fun saveProfile(
         name: String,
@@ -150,17 +128,26 @@ class StudyViewModel(
         examYear: String
     ) {
 
+
         viewModelScope.launch {
+
 
             profileDao.saveProfile(
 
                 StudentProfile(
+
                     id = 1,
+
                     name = name,
+
                     school = school,
+
                     grade = grade,
+
                     examBoard = examBoard,
+
                     examYear = examYear
+
                 )
 
             )
@@ -171,23 +158,26 @@ class StudyViewModel(
 
 
 
-    // =========================
-    // SUBJECTS
-    // =========================
+
 
     fun addSubject(
         name: String
     ) {
 
+
         if(name.isBlank()) return
+
 
 
         viewModelScope.launch {
 
+
             subjectDao.addSubject(
 
                 SubjectEntity(
+
                     name = name.trim()
+
                 )
 
             )
@@ -195,6 +185,8 @@ class StudyViewModel(
         }
 
     }
+
+
 
 
 
@@ -202,9 +194,13 @@ class StudyViewModel(
         subject: SubjectEntity
     ) {
 
+
         viewModelScope.launch {
 
-            subjectDao.deleteSubject(subject)
+
+            subjectDao.deleteSubject(
+                subject
+            )
 
         }
 
@@ -212,9 +208,7 @@ class StudyViewModel(
 
 
 
-    // =========================
-    // EXAMS
-    // =========================
+
 
     fun addExam(
         subjectName: String,
@@ -222,14 +216,20 @@ class StudyViewModel(
         examDateMillis: Long
     ) {
 
+
         viewModelScope.launch {
+
 
             examDao.addExam(
 
                 ExamEntry(
+
                     subjectName = subjectName,
+
                     paperNumber = paperNumber,
+
                     examDateMillis = examDateMillis
+
                 )
 
             )
@@ -240,9 +240,7 @@ class StudyViewModel(
 
 
 
-    // =========================
-    // STUDY SESSIONS
-    // =========================
+
 
     fun logCompletedSession(
         subjectName: String,
@@ -250,7 +248,9 @@ class StudyViewModel(
         durationMinutes: Int
     ) {
 
+
         viewModelScope.launch {
+
 
             sessionDao.addSession(
 
@@ -271,24 +271,28 @@ class StudyViewModel(
 
             )
 
+
         }
 
     }
 
 
 
-    // =========================
-    // MASTERY
-    // =========================
+
 
     fun getMastery(
         subjectName: String
     ): Double {
 
-        return masteryService
-            .getSubjectMastery(subjectName)
+
+        return masteryService.getSubjectMastery(
+            subjectName
+        )
+
 
     }
+
+
 
 
 
@@ -296,40 +300,11 @@ class StudyViewModel(
         subjectName: String
     ): String {
 
-        return masteryService
-            .getSubjectGrade(subjectName)
 
-    }
-
-
-
-    // =========================
-    // AI STUDY MISSION
-    // =========================
-
-    fun getNextStudyMission()
-            : StudyRecommendation {
-
-
-        val sessions =
-            sessionDao.getAllSessions()
-
-
-
-        val examList =
-            exams.value
-
-
-
-        return adaptivePlanner.generatePlan(
-
-            availableMinutes = 60,
-
-            sessions = sessions,
-
-            exams = examList
-
+        return masteryService.getSubjectGrade(
+            subjectName
         )
+
 
     }
 
