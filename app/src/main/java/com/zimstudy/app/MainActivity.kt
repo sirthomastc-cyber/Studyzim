@@ -120,9 +120,7 @@ class MainActivity : ComponentActivity() {
 
                             DashboardScreen(
 
-                                viewModel = viewModel,
-
-
+                                viewModel = viewModel
                                 onOpenSubjects = {
 
                                     navController.navigate(
