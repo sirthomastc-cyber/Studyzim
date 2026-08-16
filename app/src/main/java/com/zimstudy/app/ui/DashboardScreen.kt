@@ -33,12 +33,15 @@ fun DashboardScreen(
     onOpenAITeacher: () -> Unit
 ) {
 
+
     val profile by viewModel.profile.collectAsState()
     val subjects by viewModel.subjects.collectAsState()
     val exams by viewModel.exams.collectAsState()
 
 
-    val nextExam = exams.minByOrNull { it.examDateMillis }
+    val nextExam = exams.minByOrNull {
+        it.examDateMillis
+    }
 
 
     val daysToExam = nextExam?.let {
@@ -53,14 +56,21 @@ fun DashboardScreen(
     }
 
 
+
     val biologyMastery =
         viewModel.getMastery("Biology")
+
 
     val physicsMastery =
         viewModel.getMastery("Physics")
 
+
     val mathematicsMastery =
         viewModel.getMastery("Mathematics")
+
+
+    val nextMission =
+        viewModel.getNextStudyMission()
 
 
 
@@ -69,6 +79,7 @@ fun DashboardScreen(
             .fillMaxSize()
             .padding(20.dp)
     ) {
+
 
 
         Text(
@@ -83,9 +94,11 @@ fun DashboardScreen(
         )
 
 
+
         Spacer(
             Modifier.height(15.dp)
         )
+
 
 
         Button(
@@ -100,9 +113,11 @@ fun DashboardScreen(
         }
 
 
+
         Spacer(
             Modifier.height(15.dp)
         )
+
 
 
         Card(
@@ -113,6 +128,7 @@ fun DashboardScreen(
                 Modifier.padding(16.dp)
             ) {
 
+
                 Text(
                     "🔥 EXAM COUNTDOWN",
                     fontWeight = FontWeight.Bold
@@ -120,6 +136,7 @@ fun DashboardScreen(
 
 
                 if(nextExam != null){
+
 
                     Text(
                         "$daysToExam DAYS REMAINING",
@@ -131,7 +148,9 @@ fun DashboardScreen(
                         "${nextExam.subjectName} - Paper ${nextExam.paperNumber}"
                     )
 
+
                 } else {
+
 
                     Text(
                         "Add your exam timetable"
@@ -145,6 +164,7 @@ fun DashboardScreen(
 
 
 
+
         Spacer(
             Modifier.height(15.dp)
         )
@@ -155,9 +175,11 @@ fun DashboardScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
 
+
             Column(
                 Modifier.padding(16.dp)
             ) {
+
 
                 Text(
                     "📊 ESTIMATED MASTERY",
@@ -169,17 +191,75 @@ fun DashboardScreen(
                     "Biology: ${biologyMastery.toInt()}%"
                 )
 
+
                 Text(
                     "Physics: ${physicsMastery.toInt()}%"
                 )
+
 
                 Text(
                     "Mathematics: ${mathematicsMastery.toInt()}%"
                 )
 
+
             }
 
         }
+
+
+
+
+        Spacer(
+            Modifier.height(15.dp)
+        )
+
+
+
+        Card(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+
+
+            Column(
+                Modifier.padding(16.dp)
+            ) {
+
+
+                Text(
+                    "🎯 NEXT STUDY MISSION",
+                    fontWeight = FontWeight.Bold
+                )
+
+
+                Spacer(
+                    Modifier.height(8.dp)
+                )
+
+
+                Text(
+                    "Subject: ${nextMission.subject}"
+                )
+
+
+                Text(
+                    "Topic: ${nextMission.topic}"
+                )
+
+
+                Text(
+                    nextMission.reason
+                )
+
+
+                Text(
+                    "Recommended time: ${nextMission.durationMinutes} minutes"
+                )
+
+
+            }
+
+        }
+
 
 
 
@@ -193,6 +273,7 @@ fun DashboardScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ){
+
 
             Text(
                 "📚 SUBJECTS",
@@ -208,7 +289,9 @@ fun DashboardScreen(
 
             }
 
+
         }
+
 
 
 
@@ -216,7 +299,9 @@ fun DashboardScreen(
             modifier = Modifier.weight(1f)
         ){
 
+
             items(subjects){ subject ->
+
 
 
                 Card(
@@ -224,6 +309,7 @@ fun DashboardScreen(
                         .fillMaxWidth()
                         .padding(vertical = 6.dp)
                 ){
+
 
                     Row(
                         modifier = Modifier
@@ -233,7 +319,9 @@ fun DashboardScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ){
 
+
                         Column {
+
 
                             Text(
                                 subject.name,
@@ -245,34 +333,45 @@ fun DashboardScreen(
                                 "Target: ${subject.targetGrade}"
                             )
 
+
                         }
+
 
 
 
                         Button(
                             onClick = {
 
+
                                 onStartTimer(
                                     subject.name,
                                     "Priority revision"
                                 )
 
+
                             }
                         ){
 
+
                             Text("START")
+
 
                         }
 
+
                     }
+
 
                 }
 
+
             }
+
 
         }
 
+
     }
 
-}                    
-                        
+
+}
