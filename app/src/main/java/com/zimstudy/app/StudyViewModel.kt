@@ -34,11 +34,14 @@ class StudyViewModel(
     private val profileDao =
         db.studentProfileDao()
 
+
     private val subjectDao =
         db.subjectDao()
 
+
     private val examDao =
         db.examEntryDao()
+
 
     private val sessionDao =
         db.studySessionDao()
@@ -77,7 +80,7 @@ class StudyViewModel(
 
 
     // =========================
-    // DATABASE STREAMS
+    // DATABASE DATA
     // =========================
 
     val profile =
@@ -89,6 +92,7 @@ class StudyViewModel(
             )
 
 
+
     val subjects =
         subjectDao.getAllSubjects()
             .stateIn(
@@ -96,6 +100,7 @@ class StudyViewModel(
                 SharingStarted.WhileSubscribed(5000),
                 emptyList()
             )
+
 
 
     val exams =
@@ -109,7 +114,7 @@ class StudyViewModel(
 
 
     // =========================
-    // CURRENT SESSION
+    // CURRENT STUDY SESSION
     // =========================
 
     var currentSubject by mutableStateOf("General")
@@ -236,7 +241,7 @@ class StudyViewModel(
 
 
     // =========================
-    // STUDY SESSION
+    // STUDY SESSIONS
     // =========================
 
     fun logCompletedSession(
@@ -258,8 +263,7 @@ class StudyViewModel(
                     startedAtMillis =
                     System.currentTimeMillis(),
 
-                    durationMinutes =
-                    durationMinutes,
+                    durationMinutes = durationMinutes,
 
                     completed = true
 
@@ -312,11 +316,18 @@ class StudyViewModel(
 
 
 
+        val examList =
+            exams.value
+
+
+
         return adaptivePlanner.generatePlan(
 
             availableMinutes = 60,
 
-            sessions = sessions
+            sessions = sessions,
+
+            exams = examList
 
         )
 
