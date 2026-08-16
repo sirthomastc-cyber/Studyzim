@@ -1,53 +1,41 @@
 package com.zimstudy.app.ai
 
 
-class OfflineAIService : AIService {
+class OfflineAIService {
 
 
-    override suspend fun askAI(
-        question: String
+    fun askAI(
+        message: String
     ): String {
 
 
         return when {
 
-
-            question.contains(
+            message.contains(
                 "explain",
                 ignoreCase = true
             ) -> {
 
-                "I will explain this topic step by step using simple examples."
+                "I will explain this topic step by step with examples."
 
             }
 
 
-            question.contains(
+            message.contains(
                 "quiz",
                 ignoreCase = true
             ) -> {
 
-                "Here is a practice question based on your topic."
-
-            }
-
-
-            question.contains(
-                "mark",
-                ignoreCase = true
-            ) -> {
-
-                "I will analyse your answer and provide feedback."
+                "Here is a practice question. Try answering it first."
 
             }
 
 
             else -> {
 
-                "Offline AI is analysing: $question"
+                "I am your ZIMStudy AI Teacher. Ask me about your subject."
 
             }
-
 
         }
 
