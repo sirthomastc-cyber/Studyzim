@@ -39,21 +39,21 @@ fun DashboardScreen(
     val exams by viewModel.exams.collectAsState()
 
 
-    val nextExam = exams.minByOrNull {
-        it.examDateMillis
-    }
+    val nextExam =
+        exams.minByOrNull { it.examDateMillis }
 
 
-    val daysToExam = nextExam?.let {
+    val daysToExam =
+        nextExam?.let {
 
-        val diff =
-            it.examDateMillis - System.currentTimeMillis()
+            val diff =
+                it.examDateMillis - System.currentTimeMillis()
 
-        TimeUnit.MILLISECONDS
-            .toDays(diff)
-            .coerceAtLeast(0)
+            TimeUnit.MILLISECONDS
+                .toDays(diff)
+                .coerceAtLeast(0)
 
-    }
+        }
 
 
 
@@ -81,7 +81,6 @@ fun DashboardScreen(
     ) {
 
 
-
         Text(
             "ZIMStudy AI",
             style = MaterialTheme.typography.headlineMedium,
@@ -92,7 +91,6 @@ fun DashboardScreen(
         Text(
             "Welcome back, ${profile?.name ?: "Student"}"
         )
-
 
 
         Spacer(
@@ -135,7 +133,7 @@ fun DashboardScreen(
                 )
 
 
-                if(nextExam != null){
+                if(nextExam != null) {
 
 
                     Text(
@@ -161,7 +159,6 @@ fun DashboardScreen(
             }
 
         }
-
 
 
 
@@ -201,11 +198,9 @@ fun DashboardScreen(
                     "Mathematics: ${mathematicsMastery.toInt()}%"
                 )
 
-
             }
 
         }
-
 
 
 
@@ -252,14 +247,13 @@ fun DashboardScreen(
 
 
                 Text(
-                    "Recommended time: ${nextMission.durationMinutes} minutes"
+                    "Study time: ${nextMission.durationMinutes} minutes"
                 )
 
 
             }
 
         }
-
 
 
 
@@ -272,7 +266,7 @@ fun DashboardScreen(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
-        ){
+        ) {
 
 
             Text(
@@ -283,12 +277,11 @@ fun DashboardScreen(
 
             TextButton(
                 onClick = onOpenSubjects
-            ){
+            ) {
 
                 Text("Manage")
 
             }
-
 
         }
 
@@ -297,18 +290,17 @@ fun DashboardScreen(
 
         LazyColumn(
             modifier = Modifier.weight(1f)
-        ){
+        ) {
 
 
-            items(subjects){ subject ->
-
+            items(subjects) { subject ->
 
 
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 6.dp)
-                ){
+                ) {
 
 
                     Row(
@@ -317,7 +309,7 @@ fun DashboardScreen(
                             .padding(16.dp),
 
                         horizontalArrangement = Arrangement.SpaceBetween
-                    ){
+                    ) {
 
 
                         Column {
@@ -338,29 +330,23 @@ fun DashboardScreen(
 
 
 
-
                         Button(
                             onClick = {
-
 
                                 onStartTimer(
                                     subject.name,
                                     "Priority revision"
                                 )
 
-
                             }
-                        ){
-
+                        ) {
 
                             Text("START")
-
 
                         }
 
 
                     }
-
 
                 }
 
