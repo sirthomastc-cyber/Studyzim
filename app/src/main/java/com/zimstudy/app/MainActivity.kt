@@ -120,7 +120,8 @@ class MainActivity : ComponentActivity() {
 
                             DashboardScreen(
 
-                                viewModel = viewModel
+                                viewModel = viewModel,
+
                                 onOpenSubjects = {
 
                                     navController.navigate(
@@ -207,7 +208,6 @@ class MainActivity : ComponentActivity() {
                                 viewModel.currentTopic,
 
 
-
                                 onSessionComplete = { minutes ->
 
 
@@ -229,7 +229,6 @@ class MainActivity : ComponentActivity() {
 
 
                                 },
-
 
 
                                 onCancel = {
