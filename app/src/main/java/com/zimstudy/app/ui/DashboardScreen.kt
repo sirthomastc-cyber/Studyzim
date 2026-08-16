@@ -27,70 +27,104 @@ import java.util.concurrent.TimeUnit
 
 @Composable
 fun DashboardScreen(
+
     viewModel: StudyViewModel,
+
     onOpenSubjects: () -> Unit,
-    onStartTimer: (subject: String, topic: String) -> Unit,
+
+    onStartTimer: (
+        subject: String,
+        topic: String
+    ) -> Unit,
+
     onOpenAITeacher: () -> Unit
+
 ) {
 
 
     val profile by viewModel.profile.collectAsState()
+
     val subjects by viewModel.subjects.collectAsState()
+
     val exams by viewModel.exams.collectAsState()
 
 
+
     val nextExam =
-        exams.minByOrNull { it.examDateMillis }
+        exams.minByOrNull {
+            it.examDateMillis
+        }
+
 
 
     val daysToExam =
         nextExam?.let {
 
-            val diff =
-                it.examDateMillis - System.currentTimeMillis()
+
+            val difference =
+                it.examDateMillis -
+                System.currentTimeMillis()
+
 
             TimeUnit.MILLISECONDS
-                .toDays(diff)
+                .toDays(difference)
                 .coerceAtLeast(0)
 
         }
 
 
 
-    val biologyMastery =
+    val biology =
         viewModel.getMastery("Biology")
 
 
-    val physicsMastery =
+    val physics =
         viewModel.getMastery("Physics")
 
 
-    val mathematicsMastery =
+    val maths =
         viewModel.getMastery("Mathematics")
 
 
-    val nextMission =
+
+    val mission =
         viewModel.getNextStudyMission()
 
 
 
     Column(
+
         modifier = Modifier
             .fillMaxSize()
             .padding(20.dp)
+
     ) {
 
 
+
         Text(
-            "ZIMStudy AI",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
+
+            text = "ZIMStudy AI",
+
+            style =
+            MaterialTheme
+                .typography
+                .headlineMedium,
+
+            fontWeight =
+            FontWeight.Bold
+
         )
 
 
+
         Text(
+
+            text =
             "Welcome back, ${profile?.name ?: "Student"}"
+
         )
+
 
 
         Spacer(
@@ -100,10 +134,12 @@ fun DashboardScreen(
 
 
         Button(
-            onClick = {
-                onOpenAITeacher()
-            },
-            modifier = Modifier.fillMaxWidth()
+
+            onClick = onOpenAITeacher,
+
+            modifier =
+            Modifier.fillMaxWidth()
+
         ) {
 
             Text("🤖 Open AI Teacher")
@@ -119,31 +155,50 @@ fun DashboardScreen(
 
 
         Card(
-            modifier = Modifier.fillMaxWidth()
+
+            modifier =
+            Modifier.fillMaxWidth()
+
         ) {
 
+
             Column(
+
                 Modifier.padding(16.dp)
+
             ) {
 
 
                 Text(
+
                     "🔥 EXAM COUNTDOWN",
-                    fontWeight = FontWeight.Bold
+
+                    fontWeight =
+                    FontWeight.Bold
+
                 )
+
 
 
                 if(nextExam != null) {
 
 
                     Text(
+
                         "$daysToExam DAYS REMAINING",
-                        style = MaterialTheme.typography.headlineSmall
+
+                        style =
+                        MaterialTheme
+                            .typography
+                            .headlineSmall
+
                     )
 
 
                     Text(
+
                         "${nextExam.subjectName} - Paper ${nextExam.paperNumber}"
+
                     )
 
 
@@ -169,34 +224,54 @@ fun DashboardScreen(
 
 
         Card(
-            modifier = Modifier.fillMaxWidth()
+
+            modifier =
+            Modifier.fillMaxWidth()
+
         ) {
 
 
             Column(
+
                 Modifier.padding(16.dp)
+
             ) {
 
 
                 Text(
-                    "📊 ESTIMATED MASTERY",
-                    fontWeight = FontWeight.Bold
+
+                    "🎯 AI STUDY MISSION",
+
+                    fontWeight =
+                    FontWeight.Bold
+
+                )
+
+
+                Spacer(
+                    Modifier.height(8.dp)
                 )
 
 
                 Text(
-                    "Biology: ${biologyMastery.toInt()}%"
+                    "Subject: ${mission.subject}"
                 )
 
 
                 Text(
-                    "Physics: ${physicsMastery.toInt()}%"
+                    "Topic: ${mission.topic}"
                 )
 
 
                 Text(
-                    "Mathematics: ${mathematicsMastery.toInt()}%"
+                    mission.reason
                 )
+
+
+                Text(
+                    "Duration: ${mission.durationMinutes} minutes"
+                )
+
 
             }
 
@@ -211,43 +286,42 @@ fun DashboardScreen(
 
 
         Card(
-            modifier = Modifier.fillMaxWidth()
+
+            modifier =
+            Modifier.fillMaxWidth()
+
         ) {
 
 
             Column(
+
                 Modifier.padding(16.dp)
+
             ) {
 
 
                 Text(
-                    "🎯 NEXT STUDY MISSION",
-                    fontWeight = FontWeight.Bold
-                )
 
+                    "📊 MASTERY",
 
-                Spacer(
-                    Modifier.height(8.dp)
-                )
+                    fontWeight =
+                    FontWeight.Bold
 
-
-                Text(
-                    "Subject: ${nextMission.subject}"
                 )
 
 
                 Text(
-                    "Topic: ${nextMission.topic}"
+                    "Biology: ${biology.toInt()}%"
                 )
 
 
                 Text(
-                    nextMission.reason
+                    "Physics: ${physics.toInt()}%"
                 )
 
 
                 Text(
-                    "Study time: ${nextMission.durationMinutes} minutes"
+                    "Mathematics: ${maths.toInt()}%"
                 )
 
 
@@ -264,51 +338,73 @@ fun DashboardScreen(
 
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+
+            modifier =
+            Modifier.fillMaxWidth(),
+
+            horizontalArrangement =
+            Arrangement.SpaceBetween
+
         ) {
 
 
             Text(
+
                 "📚 SUBJECTS",
-                fontWeight = FontWeight.Bold
+
+                fontWeight =
+                FontWeight.Bold
+
             )
 
 
             TextButton(
+
                 onClick = onOpenSubjects
+
             ) {
 
                 Text("Manage")
 
             }
 
+
         }
 
 
 
-
         LazyColumn(
-            modifier = Modifier.weight(1f)
+
+            modifier =
+            Modifier.weight(1f)
+
         ) {
 
 
             items(subjects) { subject ->
 
 
+
                 Card(
-                    modifier = Modifier
+
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .padding(vertical = 6.dp)
+
                 ) {
 
 
                     Row(
-                        modifier = Modifier
+
+                        modifier =
+                        Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
 
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement =
+                        Arrangement.SpaceBetween
+
                     ) {
 
 
@@ -316,13 +412,19 @@ fun DashboardScreen(
 
 
                             Text(
+
                                 subject.name,
-                                fontWeight = FontWeight.Bold
+
+                                fontWeight =
+                                FontWeight.Bold
+
                             )
 
 
                             Text(
+
                                 "Target: ${subject.targetGrade}"
+
                             )
 
 
@@ -331,22 +433,32 @@ fun DashboardScreen(
 
 
                         Button(
+
                             onClick = {
 
+
                                 onStartTimer(
+
                                     subject.name,
-                                    "Priority revision"
+
+                                    "Priority Revision"
+
                                 )
 
+
                             }
+
                         ) {
 
+
                             Text("START")
+
 
                         }
 
 
                     }
+
 
                 }
 
