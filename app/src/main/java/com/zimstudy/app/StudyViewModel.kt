@@ -21,12 +21,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
-class StudyViewModel(application: Application) :
-    AndroidViewModel(application) {
+class StudyViewModel(
+    application: Application
+) : AndroidViewModel(application) {
 
 
     private val db =
         AppDatabase.getInstance(application)
+
 
 
     private val profileDao =
@@ -75,7 +77,7 @@ class StudyViewModel(application: Application) :
 
 
     // =========================
-    // DATABASE FLOWS
+    // DATABASE STREAMS
     // =========================
 
     val profile =
@@ -107,7 +109,7 @@ class StudyViewModel(application: Application) :
 
 
     // =========================
-    // SESSION STATE
+    // CURRENT SESSION
     // =========================
 
     var currentSubject by mutableStateOf("General")
@@ -148,12 +150,12 @@ class StudyViewModel(application: Application) :
             profileDao.saveProfile(
 
                 StudentProfile(
-                    1,
-                    name,
-                    school,
-                    grade,
-                    examBoard,
-                    examYear
+                    id = 1,
+                    name = name,
+                    school = school,
+                    grade = grade,
+                    examBoard = examBoard,
+                    examYear = examYear
                 )
 
             )
@@ -234,7 +236,7 @@ class StudyViewModel(application: Application) :
 
 
     // =========================
-    // STUDY SESSIONS
+    // STUDY SESSION
     // =========================
 
     fun logCompletedSession(
@@ -256,7 +258,8 @@ class StudyViewModel(application: Application) :
                     startedAtMillis =
                     System.currentTimeMillis(),
 
-                    durationMinutes = durationMinutes,
+                    durationMinutes =
+                    durationMinutes,
 
                     completed = true
 
@@ -300,19 +303,24 @@ class StudyViewModel(application: Application) :
     // AI STUDY MISSION
     // =========================
 
-    fun getNextStudyMission():
-            StudyRecommendation {
+    fun getNextStudyMission()
+            : StudyRecommendation {
+
+
+        val sessions =
+            sessionDao.getAllSessions()
+
 
 
         return adaptivePlanner.generatePlan(
 
             availableMinutes = 60,
 
-            sessions = emptyList()
+            sessions = sessions
 
         )
 
     }
 
 
-    }
+}
