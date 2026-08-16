@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.zimstudy.app.ai.AIMode
 import com.zimstudy.app.ai.AIMessage
 import com.zimstudy.app.ai.OfflineAIService
+import com.zimstudy.app.ai.StudyContext
 import kotlinx.coroutines.launch
 
 
@@ -27,17 +28,22 @@ fun AITeacherScreen() {
     }
 
 
-
     val messages = remember {
         mutableStateListOf<AIMessage>()
     }
-
 
 
     val scope = rememberCoroutineScope()
 
 
     val ai = OfflineAIService()
+
+
+    val context = StudyContext(
+        subject = "General",
+        level = "ZIMSEC O-Level",
+        topic = "Current Topic"
+    )
 
 
 
@@ -48,24 +54,15 @@ fun AITeacherScreen() {
     ) {
 
 
-
         Text(
             "🤖 ZIMStudy AI Teacher",
             style = MaterialTheme.typography.headlineSmall
         )
 
 
-
         Spacer(
             Modifier.height(10.dp)
         )
-
-
-
-        Text(
-            "Choose teaching mode:"
-        )
-
 
 
         Row(
@@ -83,6 +80,7 @@ fun AITeacherScreen() {
             }
 
 
+
             Button(
                 onClick = {
                     selectedMode = AIMode.EXAM
@@ -92,6 +90,7 @@ fun AITeacherScreen() {
             }
 
 
+
             Button(
                 onClick = {
                     selectedMode = AIMode.EXPLAIN_MISTAKE
@@ -99,6 +98,7 @@ fun AITeacherScreen() {
             ){
                 Text("Mistake")
             }
+
 
         }
 
@@ -127,7 +127,6 @@ fun AITeacherScreen() {
                 ){
 
                     Text(
-                        text =
                         if(message.fromUser)
                             "You:\n${message.text}"
                         else
@@ -153,7 +152,6 @@ fun AITeacherScreen() {
         ){
 
 
-
             OutlinedTextField(
 
                 value = question,
@@ -173,11 +171,9 @@ fun AITeacherScreen() {
 
 
 
-
             Spacer(
                 Modifier.width(8.dp)
             )
-
 
 
 
@@ -214,7 +210,13 @@ fun AITeacherScreen() {
 
                             val response =
                                 ai.askAI(
-                                    userQuestion
+
+                                    question = userQuestion,
+
+                                    context = context,
+
+                                    mode = selectedMode
+
                                 )
 
 
@@ -222,9 +224,13 @@ fun AITeacherScreen() {
                             messages.add(
 
                                 AIMessage(
+
                                     text = response,
+
                                     fromUser = false,
+
                                     mode = selectedMode
+
                                 )
 
                             )
