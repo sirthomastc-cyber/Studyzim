@@ -4,58 +4,51 @@ package com.zimstudy.app.ai
 class OfflineAIService : AIService {
 
 
-    override suspend fun askAI(
-
-        question: String,
-
-        context: StudyContext,
-
-        mode: AIMode
-
+    override fun askAI(
+        message: String
     ): String {
 
 
-        return """
+        return when {
 
-        🤖 ZIMStudy AI Teacher
+            message.contains(
+                "explain",
+                ignoreCase = true
+            ) -> {
 
+                "I will explain this topic step by step."
 
-        Subject:
-        ${context.subject}
-
-
-        Topic:
-        ${context.topic}
-
-
-        Level:
-        ${context.level}
+            }
 
 
-        Mode:
-        $mode
+            message.contains(
+                "quiz",
+                ignoreCase = true
+            ) -> {
+
+                "I will generate a practice question."
+
+            }
 
 
-        Question:
-        $question
+            message.contains(
+                "mark",
+                ignoreCase = true
+            ) -> {
+
+                "I will evaluate your answer."
+
+            }
 
 
+            else -> {
 
-        I am currently offline.
+                "Offline AI is analysing your request."
 
+            }
 
-        When connected to the AI engine I will:
-
-        • Explain ZIMSEC concepts
-        • Generate exam questions
-        • Mark answers
-        • Identify weaknesses
-        • Create revision plans
-
-
-        """.trimIndent()
+        }
 
     }
-
 
 }
