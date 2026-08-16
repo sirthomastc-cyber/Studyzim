@@ -1,128 +1,60 @@
 package com.zimstudy.app.planner
 
-import com.zimstudy.app.data.ExamEntry
 import com.zimstudy.app.data.PerformanceRepository
 import com.zimstudy.app.data.StudyAnalytics
 import com.zimstudy.app.data.StudySession
-import com.zimstudy.app.exam.ExamIntelligence
 
 
 class AdaptivePlanner(
     private val repository: PerformanceRepository,
-    private val studyAnalytics: StudyAnalytics = StudyAnalytics(),
-    private val examIntelligence: ExamIntelligence = ExamIntelligence()
+    private val studyAnalytics: StudyAnalytics
 ) {
-
 
 
     fun generatePlan(
         availableMinutes: Int,
-        sessions: List<StudySession> = emptyList(),
-        exams: List<ExamEntry> = emptyList()
+        sessions: List<StudySession> = emptyList()
     ): StudyRecommendation {
-
 
 
         val records =
             repository.getAllRecords()
 
 
-
         if(records.isEmpty()) {
 
             return StudyRecommendation(
-
                 subject = "General",
-
-                topic = "Syllabus Review",
-
-                reason =
-                "AI needs more performance data.",
-
+                topic = "Revision Setup",
+                reason = "Collecting learning data",
                 durationMinutes = availableMinutes
-
             )
 
         }
 
 
-
-        val prioritySubject =
-            records.maxByOrNull { record ->
-
-
-
-                val mastery =
-                    (
-                    record.quizAccuracy +
-                    record.pastPaperAccuracy +
-                    record.consistency
-                    ) / 3
-
-
-
-                val weakness =
-                    100 - mastery
-
-
-
-                val studyFrequency =
-                    studyAnalytics.calculateStudyFrequency(
-                        sessions,
-                        record.subjectName
-                    )
-
-
-
-                val lackOfPractice =
-                    100 -
-                    (studyFrequency * 10)
-                        .coerceIn(0.0,100.0)
-
-
-
-                val exam =
-                    exams.find {
-                        it.subjectName ==
-                        record.subjectName
-                    }
-
-
-
-                val urgency =
-                    exam?.let {
-                        examIntelligence
-                            .calculateUrgency(it)
-                    } ?: 0.0
-
-
+        val weakest =
+            records.minByOrNull {
 
                 (
-                weakness * 0.5 +
-                lackOfPractice * 0.2 +
-                urgency * 0.3
-                )
+                it.quizAccuracy +
+                it.pastPaperAccuracy +
+                it.consistency
+                ) / 3
 
             }
 
 
-
         return StudyRecommendation(
 
-            subject =
-            prioritySubject!!.subjectName,
+            subject = weakest!!.subjectName,
 
-
-            topic =
-            "Exam Priority Revision",
-
+            topic = "Priority Revision",
 
             reason =
-            "AI selected this using mastery, study behaviour and exam urgency.",
+            "AI selected this based on your performance.",
 
-
-            durationMinutes =
-            availableMinutes
+            durationMinutes = availableMinutes
 
         )
 
