@@ -1,0 +1,72 @@
+package com.zimstudy.app.planner
+
+import com.zimstudy.app.data.PerformanceRepository
+
+
+class AdaptivePlanner(
+    private val repository: PerformanceRepository
+) {
+
+
+    fun generatePlan(
+        availableMinutes: Int
+    ): StudyRecommendation {
+
+
+        val records =
+            repository.getAllRecords()
+
+
+        if(records.isEmpty()) {
+
+            return StudyRecommendation(
+
+                subject = "General",
+
+                topic = "Syllabus Review",
+
+                reason = "No performance data yet. Start studying to train your AI coach.",
+
+                durationMinutes = availableMinutes
+
+            )
+
+        }
+
+
+
+        val weakestSubject =
+            records.minByOrNull {
+
+
+                val mastery =
+                    (
+                    it.quizAccuracy +
+                    it.pastPaperAccuracy +
+                    it.consistency
+                    ) / 3
+
+
+                mastery
+
+            }
+
+
+
+        return StudyRecommendation(
+
+            subject = weakestSubject!!.subjectName,
+
+            topic = "Priority Revision",
+
+            reason = "This subject has the lowest current mastery score.",
+
+            durationMinutes = availableMinutes
+
+        )
+
+
+    }
+
+
+}
