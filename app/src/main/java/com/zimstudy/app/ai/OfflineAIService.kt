@@ -4,48 +4,50 @@ package com.zimstudy.app.ai
 class OfflineAIService : AIService {
 
 
-    override fun askAI(
-        message: String
+    override suspend fun askAI(
+        question: String
     ): String {
 
 
         return when {
 
-            message.contains(
+
+            question.contains(
                 "explain",
                 ignoreCase = true
             ) -> {
 
-                "I will explain this topic step by step."
+                "I will explain this topic step by step using simple examples."
 
             }
 
 
-            message.contains(
+            question.contains(
                 "quiz",
                 ignoreCase = true
             ) -> {
 
-                "I will generate a practice question."
+                "Here is a practice question based on your topic."
 
             }
 
 
-            message.contains(
+            question.contains(
                 "mark",
                 ignoreCase = true
             ) -> {
 
-                "I will evaluate your answer."
+                "I will analyse your answer and provide feedback."
 
             }
 
 
             else -> {
 
-                "Offline AI is analysing your request."
+                "Offline AI is analysing: $question"
 
             }
+
 
         }
 
