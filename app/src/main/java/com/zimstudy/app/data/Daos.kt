@@ -5,50 +5,103 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
-import kotlinx.coroutines.flow.Flow
+
+
+
+// =========================
+// STUDENT PROFILE DAO
+// =========================
 
 @Dao
 interface StudentProfileDao {
-    @Query("SELECT * FROM student_profile WHERE id = 1")
-    fun getProfile(): Flow<StudentProfile?>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveProfile(profile: StudentProfile)
+
+    @Query("SELECT * FROM student_profile LIMIT 1")
+    fun getProfile(): kotlinx.coroutines.flow.Flow<StudentProfile?>
+
+
+    @Insert(
+        onConflict = OnConflictStrategy.REPLACE
+    )
+    suspend fun saveProfile(
+        profile: StudentProfile
+    )
+
 }
+
+
+
+// =========================
+// SUBJECT DAO
+// =========================
 
 @Dao
 interface SubjectDao {
-    @Query("SELECT * FROM subjects ORDER BY name")
-    fun getAllSubjects(): Flow<List<SubjectEntity>>
+
+
+    @Query("SELECT * FROM subjects")
+    fun getAllSubjects():
+            kotlinx.coroutines.flow.Flow<List<SubjectEntity>>
+
+
 
     @Insert
-    suspend fun addSubject(subject: SubjectEntity)
+    suspend fun addSubject(
+        subject: SubjectEntity
+    )
+
+
 
     @Delete
-    suspend fun deleteSubject(subject: SubjectEntity)
+    suspend fun deleteSubject(
+        subject: SubjectEntity
+    )
+
 }
+
+
+
+// =========================
+// EXAM DAO
+// =========================
 
 @Dao
 interface ExamEntryDao {
-    @Query("SELECT * FROM exam_entries ORDER BY examDateMillis")
-    fun getAllExams(): Flow<List<ExamEntry>>
+
+
+    @Query("SELECT * FROM exams")
+    fun getAllExams():
+            kotlinx.coroutines.flow.Flow<List<ExamEntry>>
+
+
 
     @Insert
-    suspend fun addExam(exam: ExamEntry)
+    suspend fun addExam(
+        exam: ExamEntry
+    )
 
-    @Delete
-    suspend fun deleteExam(exam: ExamEntry)
 }
+
+
+
+// =========================
+// STUDY SESSION DAO
+// =========================
 
 @Dao
 interface StudySessionDao {
-    @Query("SELECT * FROM study_sessions ORDER BY startedAtMillis DESC")
-    fun getAllSessions(): Flow<List<StudySession>>
+
 
     @Insert
-    suspend fun addSession(session: StudySession): Long
+    suspend fun addSession(
+        session: StudySession
+    )
 
-    @Update
-    suspend fun updateSession(session: StudySession)
+
+
+    @Query("SELECT * FROM study_sessions")
+    fun getAllSessions():
+            List<StudySession>
+
+
 }
