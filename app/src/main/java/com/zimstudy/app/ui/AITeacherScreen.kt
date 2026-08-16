@@ -2,17 +2,14 @@ package com.zimstudy.app.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.zimstudy.app.StudyViewModel
-import com.zimstudy.app.ai.AIMode
-import com.zimstudy.app.ai.AIMessage
-import com.zimstudy.app.ai.OfflineAIService
-import com.zimstudy.app.ai.StudyContext
+import com.zimstudy.app.ai.*
 import kotlinx.coroutines.launch
 
 
@@ -20,6 +17,7 @@ import kotlinx.coroutines.launch
 fun AITeacherScreen(
     viewModel: StudyViewModel
 ) {
+
 
     var question by remember {
         mutableStateOf("")
@@ -36,34 +34,55 @@ fun AITeacherScreen(
     }
 
 
-    val subjects by viewModel.subjects.collectAsState()
-
-
-    val messages = remember {
-        mutableStateListOf<AIMessage>()
+    var selectedTopic by remember {
+        mutableStateOf("General Revision")
     }
 
 
-    val scope = rememberCoroutineScope()
 
-
-    val ai = OfflineAIService()
+    val subjects by viewModel.subjects.collectAsState()
 
 
 
-    val context = StudyContext(
-        subject = selectedSubject,
-        level = "ZIMSEC O-Level",
-        topic = "Current Topic"
-    )
+    val topics =
+        TopicRepository.getTopics(selectedSubject)
+
+
+
+    val messages =
+        remember {
+            mutableStateListOf<AIMessage>()
+        }
+
+
+
+    val scope =
+        rememberCoroutineScope()
+
+
+
+    val ai =
+        OfflineAIService()
+
+
+
+    val context =
+        StudyContext(
+            subject = selectedSubject,
+            level = "ZIMSEC O-Level",
+            topic = selectedTopic
+        )
+
 
 
 
     Column(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxSize()
             .padding(16.dp)
-    ) {
+    ){
+
 
 
         Text(
@@ -72,32 +91,44 @@ fun AITeacherScreen(
         )
 
 
+
         Spacer(
             Modifier.height(10.dp)
         )
 
 
+
         Text(
-            "Choose Subject: $selectedSubject"
+            "Subject: $selectedSubject"
         )
+
 
 
         LazyRow {
 
-            items(subjects) { subject ->
+            items(subjects){ subject ->
 
 
                 Button(
+
                     onClick = {
-                        selectedSubject = subject.name
+
+                        selectedSubject =
+                            subject.name
+
+                        selectedTopic =
+                            "General Revision"
+
                     },
-                    modifier = Modifier.padding(4.dp)
+
+                    modifier =
+                    Modifier.padding(4.dp)
+
                 ){
 
                     Text(subject.name)
 
                 }
-
 
             }
 
@@ -112,19 +143,64 @@ fun AITeacherScreen(
 
 
         Text(
-            "Choose Mode"
+            "Topic: $selectedTopic"
         )
 
 
+
+        LazyRow {
+
+
+            items(topics){ topic ->
+
+
+                Button(
+
+                    onClick = {
+
+                        selectedTopic =
+                            topic.name
+
+                    },
+
+                    modifier =
+                    Modifier.padding(4.dp)
+
+                ){
+
+                    Text(topic.name)
+
+                }
+
+
+            }
+
+
+        }
+
+
+
+
+        Spacer(
+            Modifier.height(10.dp)
+        )
+
+
+
+
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
+            horizontalArrangement =
+            Arrangement.SpaceBetween,
+            modifier =
+            Modifier.fillMaxWidth()
+        ){
+
 
 
             Button(
                 onClick = {
-                    selectedMode = AIMode.TEACH
+                    selectedMode =
+                        AIMode.TEACH
                 }
             ){
 
@@ -134,9 +210,11 @@ fun AITeacherScreen(
 
 
 
+
             Button(
                 onClick = {
-                    selectedMode = AIMode.EXAM
+                    selectedMode =
+                        AIMode.EXAM
                 }
             ){
 
@@ -146,9 +224,12 @@ fun AITeacherScreen(
 
 
 
+
+
             Button(
                 onClick = {
-                    selectedMode = AIMode.EXPLAIN_MISTAKE
+                    selectedMode =
+                        AIMode.EXPLAIN_MISTAKE
                 }
             ){
 
@@ -161,16 +242,15 @@ fun AITeacherScreen(
 
 
 
-        Spacer(
-            Modifier.height(10.dp)
-        )
-
 
 
         LazyColumn(
-            modifier = Modifier
+
+            modifier =
+            Modifier
                 .weight(1f)
                 .fillMaxWidth()
+
         ){
 
 
@@ -178,18 +258,23 @@ fun AITeacherScreen(
 
 
                 Card(
-                    modifier = Modifier
+
+                    modifier =
+                    Modifier
                         .fillMaxWidth()
                         .padding(5.dp)
+
                 ){
 
 
                     Text(
 
-                        text =
                         if(message.fromUser)
+
                             "You:\n${message.text}"
+
                         else
+
                             "AI Teacher:\n${message.text}",
 
 
@@ -212,7 +297,8 @@ fun AITeacherScreen(
 
 
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier =
+            Modifier.fillMaxWidth()
         ){
 
 
@@ -235,12 +321,6 @@ fun AITeacherScreen(
 
 
 
-            Spacer(
-                Modifier.width(8.dp)
-            )
-
-
-
             Button(
 
                 onClick = {
@@ -249,18 +329,24 @@ fun AITeacherScreen(
                     if(question.isNotBlank()){
 
 
-                        val userQuestion = question
+                        val q =
+                            question
 
 
                         messages.add(
 
                             AIMessage(
-                                text = userQuestion,
+
+                                text = q,
+
                                 fromUser = true,
+
                                 mode = selectedMode
+
                             )
 
                         )
+
 
 
                         question = ""
@@ -270,10 +356,10 @@ fun AITeacherScreen(
                         scope.launch {
 
 
-                            val response =
+                            val answer =
                                 ai.askAI(
 
-                                    question = userQuestion,
+                                    question = q,
 
                                     context = context,
 
@@ -287,7 +373,7 @@ fun AITeacherScreen(
 
                                 AIMessage(
 
-                                    text = response,
+                                    text = answer,
 
                                     fromUser = false,
 
@@ -317,5 +403,6 @@ fun AITeacherScreen(
 
 
     }
+
 
 }
