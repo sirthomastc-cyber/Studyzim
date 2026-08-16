@@ -26,12 +26,16 @@ class MainActivity : ComponentActivity() {
     private val viewModel: StudyViewModel by viewModels()
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+
+    override fun onCreate(
+        savedInstanceState: Bundle?
+    ) {
 
         super.onCreate(savedInstanceState)
 
 
         setContent {
+
 
             MaterialTheme {
 
@@ -45,7 +49,9 @@ class MainActivity : ComponentActivity() {
                         rememberNavController()
 
 
-                    val profile by viewModel.profile.collectAsState()
+
+                    val profile by
+                    viewModel.profile.collectAsState()
 
 
 
@@ -54,10 +60,10 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
 
                         startDestination =
-                            if (profile == null)
-                                "onboarding"
-                            else
-                                "dashboard"
+                        if(profile == null)
+                            "onboarding"
+                        else
+                            "dashboard"
 
                     ) {
 
@@ -77,11 +83,17 @@ class MainActivity : ComponentActivity() {
 
 
                                     viewModel.saveProfile(
+
                                         name,
+
                                         school,
+
                                         grade,
+
                                         board,
+
                                         year
+
                                     )
 
 
@@ -92,7 +104,9 @@ class MainActivity : ComponentActivity() {
                                         popUpTo(
                                             "onboarding"
                                         ) {
+
                                             inclusive = true
+
                                         }
 
                                     }
@@ -102,7 +116,6 @@ class MainActivity : ComponentActivity() {
                             )
 
                         }
-
 
 
 
@@ -155,17 +168,12 @@ class MainActivity : ComponentActivity() {
 
 
 
-
-
                         composable("ai_teacher") {
 
 
                             AITeacherScreen()
 
                         }
-
-
-
 
 
 
@@ -176,16 +184,16 @@ class MainActivity : ComponentActivity() {
 
                                 viewModel = viewModel,
 
+
                                 onBack = {
+
                                     navController.popBackStack()
+
                                 }
 
                             )
 
                         }
-
-
-
 
 
 
@@ -195,15 +203,16 @@ class MainActivity : ComponentActivity() {
                             TimerScreen(
 
                                 subject =
-                                    viewModel.currentSubject,
+                                viewModel.currentSubject,
 
 
                                 topic =
-                                    viewModel.currentTopic,
+                                viewModel.currentTopic,
 
 
+                                onSessionComplete = {
 
-                                onSessionComplete = { minutes ->
+                                        minutes ->
 
 
                                     viewModel.logCompletedSession(
@@ -217,14 +226,9 @@ class MainActivity : ComponentActivity() {
                                     )
 
 
-                                    navController.popBackStack(
-                                        "dashboard",
-                                        inclusive = false
-                                    )
-
+                                    navController.popBackStack()
 
                                 },
-
 
 
                                 onCancel = {
@@ -236,6 +240,7 @@ class MainActivity : ComponentActivity() {
                             )
 
                         }
+
 
                     }
 
