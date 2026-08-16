@@ -49,6 +49,7 @@ class MainActivity : ComponentActivity() {
                         rememberNavController()
 
 
+
                     val profile by
                     viewModel.profile.collectAsState()
 
@@ -82,13 +83,11 @@ class MainActivity : ComponentActivity() {
 
 
                                     viewModel.saveProfile(
-
                                         name,
                                         school,
                                         grade,
                                         board,
                                         year
-
                                     )
 
 
@@ -122,6 +121,7 @@ class MainActivity : ComponentActivity() {
 
                                 viewModel = viewModel,
 
+
                                 onOpenSubjects = {
 
                                     navController.navigate(
@@ -131,9 +131,7 @@ class MainActivity : ComponentActivity() {
                                 },
 
 
-                                onStartTimer = {
-                                        subject,
-                                        topic ->
+                                onStartTimer = { subject, topic ->
 
 
                                     viewModel.startSession(
@@ -164,12 +162,14 @@ class MainActivity : ComponentActivity() {
 
 
 
+
                         composable("ai_teacher") {
 
 
                             AITeacherScreen()
 
                         }
+
 
 
 
@@ -191,6 +191,7 @@ class MainActivity : ComponentActivity() {
                             )
 
                         }
+
 
 
 
@@ -222,11 +223,7 @@ class MainActivity : ComponentActivity() {
                                     )
 
 
-                                    navController.popBackStack(
-                                        "dashboard",
-                                        false
-                                    )
-
+                                    navController.popBackStack()
 
                                 },
 
@@ -240,7 +237,6 @@ class MainActivity : ComponentActivity() {
                             )
 
                         }
-
 
 
                     }
