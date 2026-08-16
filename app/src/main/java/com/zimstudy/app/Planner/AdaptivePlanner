@@ -1,16 +1,22 @@
 package com.zimstudy.app.planner
 
 import com.zimstudy.app.data.PerformanceRepository
+import com.zimstudy.app.data.StudyAnalytics
+import com.zimstudy.app.data.StudySession
 
 
 class AdaptivePlanner(
-    private val repository: PerformanceRepository
+    private val repository: PerformanceRepository,
+    private val studyAnalytics: StudyAnalytics = StudyAnalytics()
 ) {
 
 
+
     fun generatePlan(
-        availableMinutes: Int
+        availableMinutes: Int,
+        sessions: List<StudySession> = emptyList()
     ): StudyRecommendation {
+
 
 
         val records =
@@ -28,7 +34,7 @@ class AdaptivePlanner(
                 topic = "Syllabus Setup",
 
                 reason =
-                "AI needs study data first. Complete some sessions and quizzes.",
+                "AI needs more learning data.",
 
                 durationMinutes = availableMinutes
 
@@ -38,14 +44,18 @@ class AdaptivePlanner(
 
 
 
-        val priority =
+        val prioritySubject =
             records.maxByOrNull {
 
 
                 calculatePriority(
                     it.quizAccuracy,
                     it.pastPaperAccuracy,
-                    it.consistency
+                    it.consistency,
+                    studyAnalytics.calculateStudyFrequency(
+                        sessions,
+                        it.subjectName
+                    )
                 )
 
             }
@@ -54,22 +64,14 @@ class AdaptivePlanner(
 
         return StudyRecommendation(
 
+            subject = prioritySubject!!.subjectName,
 
-            subject =
-            priority!!.subjectName,
-
-
-            topic =
-            "High Priority Revision",
-
+            topic = "Targeted Revision",
 
             reason =
-            "AI detected this as your biggest improvement opportunity.",
+            "AI selected this because your mastery and study activity show it needs attention.",
 
-
-            durationMinutes =
-            availableMinutes
-
+            durationMinutes = availableMinutes
 
         )
 
@@ -85,22 +87,37 @@ class AdaptivePlanner(
 
         pastPaperAccuracy: Double,
 
-        consistency: Double
+        consistency: Double,
+
+        studyFrequency: Double
 
     ): Double {
 
 
+        val mastery =
+            (
+            quizAccuracy +
+            pastPaperAccuracy +
+            consistency
+            ) / 3
+
+
 
         val weakness =
-            100 - (
-                    (quizAccuracy +
-                    pastPaperAccuracy +
-                    consistency) / 3
-                    )
+            100 - mastery
 
 
 
-        return weakness
+        val lackOfPractice =
+            100 - (studyFrequency * 10)
+                .coerceIn(0.0,100.0)
+
+
+
+        return (
+                weakness * 0.7 +
+                lackOfPractice * 0.3
+                )
 
     }
 
