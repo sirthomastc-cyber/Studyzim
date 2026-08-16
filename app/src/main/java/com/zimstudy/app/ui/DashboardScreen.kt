@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.zimstudy.app.StudyViewModel
-import com.zimstudy.app.analytics.GradePredictor
 import java.util.concurrent.TimeUnit
 
 
@@ -40,21 +39,32 @@ fun DashboardScreen(
 
     val nextExam = exams.minByOrNull { it.examDateMillis }
 
+
     val daysToExam = nextExam?.let {
-        val diff = it.examDateMillis - System.currentTimeMillis()
+
+        val diff =
+            it.examDateMillis - System.currentTimeMillis()
 
         TimeUnit.MILLISECONDS
             .toDays(diff)
             .coerceAtLeast(0)
+
     }
 
 
-    // Temporary mastery data
-    // Later this will come from the database
 
-    val biologyMastery = 82.0
-    val physicsMastery = 68.0
-    val mathematicsMastery = 85.0
+    // LIVE MASTERY DATA
+
+    val biologyMastery =
+        viewModel.getMastery("Biology")
+
+
+    val physicsMastery =
+        viewModel.getMastery("Physics")
+
+
+    val mathematicsMastery =
+        viewModel.getMastery("Mathematics")
 
 
 
@@ -77,13 +87,12 @@ fun DashboardScreen(
         )
 
 
+
         Spacer(
             Modifier.height(16.dp)
         )
 
 
-
-        // EXAM COUNTDOWN
 
         Card(
             modifier = Modifier.fillMaxWidth()
@@ -99,7 +108,7 @@ fun DashboardScreen(
                 )
 
 
-                if(daysToExam != null){
+                if(nextExam != null) {
 
                     Text(
                         "$daysToExam DAYS REMAINING",
@@ -108,13 +117,13 @@ fun DashboardScreen(
 
 
                     Text(
-                        "${nextExam?.subjectName} - Paper ${nextExam?.paperNumber}"
+                        "${nextExam.subjectName} - Paper ${nextExam.paperNumber}"
                     )
 
                 } else {
 
                     Text(
-                        "Add your examination timetable"
+                        "Add your exam timetable"
                     )
 
                 }
@@ -131,16 +140,13 @@ fun DashboardScreen(
 
 
 
-        // TODAY'S MISSION
-
-
         Card(
             modifier = Modifier.fillMaxWidth()
-        ){
+        ) {
 
             Column(
                 Modifier.padding(16.dp)
-            ){
+            ) {
 
                 Text(
                     "🎯 TODAY'S MISSION",
@@ -149,7 +155,7 @@ fun DashboardScreen(
 
 
                 Text(
-                    "Priority revision session"
+                    "Complete your highest priority topic"
                 )
 
 
@@ -169,16 +175,13 @@ fun DashboardScreen(
 
 
 
-        // MASTERY
-
-
         Card(
             modifier = Modifier.fillMaxWidth()
-        ){
+        ) {
 
             Column(
                 Modifier.padding(16.dp)
-            ){
+            ) {
 
                 Text(
                     "📊 ESTIMATED MASTERY",
@@ -187,19 +190,23 @@ fun DashboardScreen(
 
 
                 Text(
-                    "Biology       ${biologyMastery.toInt()}%   ${GradePredictor.predict(biologyMastery)}"
+                    "Biology       ${biologyMastery.toInt()}%"
                 )
 
 
                 Text(
-                    "Physics       ${physicsMastery.toInt()}%   ${GradePredictor.predict(physicsMastery)}"
+                    "Physics       ${physicsMastery.toInt()}%"
                 )
 
 
                 Text(
-                    "Mathematics   ${mathematicsMastery.toInt()}%   ${GradePredictor.predict(mathematicsMastery)}"
+                    "Mathematics   ${mathematicsMastery.toInt()}%"
                 )
 
+
+                Text(
+                    "Based on quizzes, past papers and consistency"
+                )
 
             }
 
@@ -216,7 +223,8 @@ fun DashboardScreen(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
-        ){
+        ) {
+
 
             Text(
                 "📚 SUBJECTS",
@@ -226,7 +234,7 @@ fun DashboardScreen(
 
             TextButton(
                 onClick = onOpenSubjects
-            ){
+            ) {
 
                 Text("Manage")
 
@@ -238,16 +246,17 @@ fun DashboardScreen(
 
         LazyColumn(
             modifier = Modifier.weight(1f)
-        ){
+        ) {
 
-            items(subjects){ subject ->
+
+            items(subjects) { subject ->
 
 
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 6.dp)
-                ){
+                ) {
 
 
                     Row(
@@ -256,10 +265,11 @@ fun DashboardScreen(
                             .padding(16.dp),
 
                         horizontalArrangement = Arrangement.SpaceBetween
-                    ){
+                    ) {
 
 
-                        Column{
+                        Column {
+
 
                             Text(
                                 subject.name,
@@ -284,7 +294,7 @@ fun DashboardScreen(
                                 )
 
                             }
-                        ){
+                        ) {
 
                             Text("START")
 
@@ -294,10 +304,14 @@ fun DashboardScreen(
 
                 }
 
+
             }
+
 
         }
 
+
     }
+
 
 }
