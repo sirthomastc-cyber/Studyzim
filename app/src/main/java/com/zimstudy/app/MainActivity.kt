@@ -49,7 +49,6 @@ class MainActivity : ComponentActivity() {
                         rememberNavController()
 
 
-
                     val profile by
                     viewModel.profile.collectAsState()
 
@@ -60,7 +59,7 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
 
                         startDestination =
-                        if(profile == null)
+                        if (profile == null)
                             "onboarding"
                         else
                             "dashboard"
@@ -85,13 +84,9 @@ class MainActivity : ComponentActivity() {
                                     viewModel.saveProfile(
 
                                         name,
-
                                         school,
-
                                         grade,
-
                                         board,
-
                                         year
 
                                     )
@@ -116,6 +111,7 @@ class MainActivity : ComponentActivity() {
                             )
 
                         }
+
 
 
 
@@ -168,12 +164,14 @@ class MainActivity : ComponentActivity() {
 
 
 
+
                         composable("ai_teacher") {
 
 
                             AITeacherScreen()
 
                         }
+
 
 
 
@@ -197,6 +195,7 @@ class MainActivity : ComponentActivity() {
 
 
 
+
                         composable("timer") {
 
 
@@ -210,9 +209,8 @@ class MainActivity : ComponentActivity() {
                                 viewModel.currentTopic,
 
 
-                                onSessionComplete = {
 
-                                        minutes ->
+                                onSessionComplete = { minutes ->
 
 
                                     viewModel.logCompletedSession(
@@ -226,9 +224,14 @@ class MainActivity : ComponentActivity() {
                                     )
 
 
-                                    navController.popBackStack()
+                                    navController.popBackStack(
+                                        "dashboard",
+                                        false
+                                    )
+
 
                                 },
+
 
 
                                 onCancel = {
@@ -240,6 +243,7 @@ class MainActivity : ComponentActivity() {
                             )
 
                         }
+
 
 
                     }
