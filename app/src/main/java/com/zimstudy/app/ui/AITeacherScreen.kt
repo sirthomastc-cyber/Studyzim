@@ -18,35 +18,28 @@ fun AITeacherScreen(
     viewModel: StudyViewModel
 ) {
 
-
     var question by remember {
         mutableStateOf("")
     }
-
 
     var selectedMode by remember {
         mutableStateOf(AIMode.TEACH)
     }
 
-
     var selectedSubject by remember {
         mutableStateOf("General")
     }
-
 
     var selectedTopic by remember {
         mutableStateOf("General Revision")
     }
 
 
-
     val subjects by viewModel.subjects.collectAsState()
-
 
 
     val topics =
         TopicRepository.getTopics(selectedSubject)
-
 
 
     val messages =
@@ -55,10 +48,8 @@ fun AITeacherScreen(
         }
 
 
-
     val scope =
         rememberCoroutineScope()
-
 
 
     val ai =
@@ -75,14 +66,12 @@ fun AITeacherScreen(
 
 
 
-
     Column(
         modifier =
         Modifier
             .fillMaxSize()
             .padding(16.dp)
-    ){
-
+    ) {
 
 
         Text(
@@ -91,11 +80,9 @@ fun AITeacherScreen(
         )
 
 
-
         Spacer(
             Modifier.height(10.dp)
         )
-
 
 
         Text(
@@ -103,11 +90,9 @@ fun AITeacherScreen(
         )
 
 
-
         LazyRow {
 
-            items(subjects){ subject ->
-
+            items(subjects) { subject ->
 
                 Button(
 
@@ -124,7 +109,7 @@ fun AITeacherScreen(
                     modifier =
                     Modifier.padding(4.dp)
 
-                ){
+                ) {
 
                     Text(subject.name)
 
@@ -150,8 +135,7 @@ fun AITeacherScreen(
 
         LazyRow {
 
-
-            items(topics){ topic ->
+            items(topics) { topic ->
 
 
                 Button(
@@ -166,15 +150,13 @@ fun AITeacherScreen(
                     modifier =
                     Modifier.padding(4.dp)
 
-                ){
+                ) {
 
                     Text(topic.name)
 
                 }
 
-
             }
-
 
         }
 
@@ -187,14 +169,11 @@ fun AITeacherScreen(
 
 
 
-
         Row(
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement =
-            Arrangement.SpaceBetween,
-            modifier =
-            Modifier.fillMaxWidth()
-        ){
-
+            Arrangement.SpaceBetween
+        ) {
 
 
             Button(
@@ -202,12 +181,9 @@ fun AITeacherScreen(
                     selectedMode =
                         AIMode.TEACH
                 }
-            ){
-
+            ) {
                 Text("Teach")
-
             }
-
 
 
 
@@ -216,13 +192,9 @@ fun AITeacherScreen(
                     selectedMode =
                         AIMode.EXAM
                 }
-            ){
-
+            ) {
                 Text("Exam")
-
             }
-
-
 
 
 
@@ -231,10 +203,8 @@ fun AITeacherScreen(
                     selectedMode =
                         AIMode.EXPLAIN_MISTAKE
                 }
-            ){
-
+            ) {
                 Text("Mistake")
-
             }
 
 
@@ -251,10 +221,10 @@ fun AITeacherScreen(
                 .weight(1f)
                 .fillMaxWidth()
 
-        ){
+        ) {
 
 
-            items(messages){ message ->
+            items(messages) { message ->
 
 
                 Card(
@@ -264,11 +234,12 @@ fun AITeacherScreen(
                         .fillMaxWidth()
                         .padding(5.dp)
 
-                ){
+                ) {
 
 
                     Text(
 
+                        text =
                         if(message.fromUser)
 
                             "You:\n${message.text}"
@@ -283,12 +254,10 @@ fun AITeacherScreen(
 
                     )
 
-
                 }
 
 
             }
-
 
         }
 
@@ -299,7 +268,7 @@ fun AITeacherScreen(
         Row(
             modifier =
             Modifier.fillMaxWidth()
-        ){
+        ) {
 
 
             OutlinedTextField(
@@ -321,15 +290,21 @@ fun AITeacherScreen(
 
 
 
+            Spacer(
+                Modifier.width(8.dp)
+            )
+
+
+
             Button(
 
                 onClick = {
 
 
-                    if(question.isNotBlank()){
+                    if(question.isNotBlank()) {
 
 
-                        val q =
+                        val userQuestion =
                             question
 
 
@@ -337,7 +312,7 @@ fun AITeacherScreen(
 
                             AIMessage(
 
-                                text = q,
+                                text = userQuestion,
 
                                 fromUser = true,
 
@@ -348,7 +323,6 @@ fun AITeacherScreen(
                         )
 
 
-
                         question = ""
 
 
@@ -357,15 +331,70 @@ fun AITeacherScreen(
 
 
                             val answer =
-                                ai.askAI(
 
-                                    question = q,
 
-                                    context = context,
+                                if(selectedMode == AIMode.EXAM) {
 
-                                    mode = selectedMode
 
-                                )
+                                    val examiner =
+                                        AIExaminerService()
+
+
+
+                                    val examQuestion =
+                                        examiner.generateQuestion(
+
+                                            selectedSubject,
+
+                                            selectedTopic
+
+                                        )
+
+
+
+                                    """
+                                    📝 ZIMSEC EXAM QUESTION
+                                    
+                                    Subject:
+                                    ${examQuestion.subject}
+                                    
+                                    Topic:
+                                    ${examQuestion.topic}
+                                    
+                                    Marks:
+                                    ${examQuestion.marks}
+                                    
+                                    Difficulty:
+                                    ${examQuestion.difficulty}
+                                    
+                                    Question:
+                                    ${examQuestion.questionText}
+                                    
+                                    Answer when ready.
+                                    """.trimIndent()
+
+
+
+                                } else {
+
+
+                                    ai.askAI(
+
+                                        question =
+                                        userQuestion,
+
+
+                                        context =
+                                        context,
+
+
+                                        mode =
+                                        selectedMode
+
+                                    )
+
+                                }
+
 
 
 
@@ -392,7 +421,7 @@ fun AITeacherScreen(
 
                 }
 
-            ){
+            ) {
 
                 Text("Send")
 
