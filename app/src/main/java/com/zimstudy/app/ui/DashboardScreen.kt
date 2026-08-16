@@ -1,5 +1,6 @@
 package com.zimstudy.app.ui
 
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +26,7 @@ import com.zimstudy.app.StudyViewModel
 import java.util.concurrent.TimeUnit
 
 
+
 @Composable
 fun DashboardScreen(
 
@@ -42,11 +44,16 @@ fun DashboardScreen(
 ) {
 
 
-    val profile by viewModel.profile.collectAsState()
+    val profile by
+    viewModel.profile.collectAsState()
 
-    val subjects by viewModel.subjects.collectAsState()
 
-    val exams by viewModel.exams.collectAsState()
+    val subjects by
+    viewModel.subjects.collectAsState()
+
+
+    val exams by
+    viewModel.exams.collectAsState()
 
 
 
@@ -60,29 +67,28 @@ fun DashboardScreen(
     val daysToExam =
         nextExam?.let {
 
-
-            val difference =
+            val diff =
                 it.examDateMillis -
-                System.currentTimeMillis()
+                        System.currentTimeMillis()
 
 
             TimeUnit.MILLISECONDS
-                .toDays(difference)
+                .toDays(diff)
                 .coerceAtLeast(0)
 
         }
 
 
 
-    val biology =
+    val biologyMastery =
         viewModel.getMastery("Biology")
 
 
-    val physics =
+    val physicsMastery =
         viewModel.getMastery("Physics")
 
 
-    val maths =
+    val mathematicsMastery =
         viewModel.getMastery("Mathematics")
 
 
@@ -104,12 +110,10 @@ fun DashboardScreen(
 
         Text(
 
-            text = "ZIMStudy AI",
+            "ZIMStudy AI",
 
             style =
-            MaterialTheme
-                .typography
-                .headlineMedium,
+            MaterialTheme.typography.headlineMedium,
 
             fontWeight =
             FontWeight.Bold
@@ -120,7 +124,6 @@ fun DashboardScreen(
 
         Text(
 
-            text =
             "Welcome back, ${profile?.name ?: "Student"}"
 
         )
@@ -130,6 +133,7 @@ fun DashboardScreen(
         Spacer(
             Modifier.height(15.dp)
         )
+
 
 
 
@@ -148,9 +152,11 @@ fun DashboardScreen(
 
 
 
+
         Spacer(
             Modifier.height(15.dp)
         )
+
 
 
 
@@ -180,7 +186,7 @@ fun DashboardScreen(
 
 
 
-                if(nextExam != null) {
+                if(nextExam != null){
 
 
                     Text(
@@ -188,9 +194,7 @@ fun DashboardScreen(
                         "$daysToExam DAYS REMAINING",
 
                         style =
-                        MaterialTheme
-                            .typography
-                            .headlineSmall
+                        MaterialTheme.typography.headlineSmall
 
                     )
 
@@ -217,9 +221,13 @@ fun DashboardScreen(
 
 
 
+
+
         Spacer(
             Modifier.height(15.dp)
         )
+
+
 
 
 
@@ -248,30 +256,9 @@ fun DashboardScreen(
                 )
 
 
-                Spacer(
-                    Modifier.height(8.dp)
-                )
-
-
                 Text(
-                    "Subject: ${mission.subject}"
+                    mission
                 )
-
-
-                Text(
-                    "Topic: ${mission.topic}"
-                )
-
-
-                Text(
-                    mission.reason
-                )
-
-
-                Text(
-                    "Duration: ${mission.durationMinutes} minutes"
-                )
-
 
             }
 
@@ -279,9 +266,13 @@ fun DashboardScreen(
 
 
 
+
+
         Spacer(
             Modifier.height(15.dp)
         )
+
+
 
 
 
@@ -302,7 +293,7 @@ fun DashboardScreen(
 
                 Text(
 
-                    "📊 MASTERY",
+                    "📊 ESTIMATED MASTERY",
 
                     fontWeight =
                     FontWeight.Bold
@@ -311,17 +302,17 @@ fun DashboardScreen(
 
 
                 Text(
-                    "Biology: ${biology.toInt()}%"
+                    "Biology: ${biologyMastery.toInt()}%"
                 )
 
 
                 Text(
-                    "Physics: ${physics.toInt()}%"
+                    "Physics: ${physicsMastery.toInt()}%"
                 )
 
 
                 Text(
-                    "Mathematics: ${maths.toInt()}%"
+                    "Mathematics: ${mathematicsMastery.toInt()}%"
                 )
 
 
@@ -331,9 +322,13 @@ fun DashboardScreen(
 
 
 
+
+
         Spacer(
             Modifier.height(15.dp)
         )
+
+
 
 
 
@@ -358,9 +353,11 @@ fun DashboardScreen(
             )
 
 
+
             TextButton(
 
-                onClick = onOpenSubjects
+                onClick =
+                onOpenSubjects
 
             ) {
 
@@ -368,8 +365,9 @@ fun DashboardScreen(
 
             }
 
-
         }
+
+
 
 
 
@@ -381,7 +379,7 @@ fun DashboardScreen(
         ) {
 
 
-            items(subjects) { subject ->
+            items(subjects){ subject ->
 
 
 
@@ -392,7 +390,8 @@ fun DashboardScreen(
                         .fillMaxWidth()
                         .padding(vertical = 6.dp)
 
-                ) {
+                ){
+
 
 
                     Row(
@@ -402,10 +401,12 @@ fun DashboardScreen(
                             .fillMaxWidth()
                             .padding(16.dp),
 
+
                         horizontalArrangement =
                         Arrangement.SpaceBetween
 
-                    ) {
+                    ){
+
 
 
                         Column {
@@ -432,6 +433,8 @@ fun DashboardScreen(
 
 
 
+
+
                         Button(
 
                             onClick = {
@@ -441,7 +444,7 @@ fun DashboardScreen(
 
                                     subject.name,
 
-                                    "Priority Revision"
+                                    "Priority revision"
 
                                 )
 
@@ -453,12 +456,10 @@ fun DashboardScreen(
 
                             Text("START")
 
-
                         }
 
 
                     }
-
 
                 }
 
