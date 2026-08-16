@@ -29,7 +29,8 @@ import java.util.concurrent.TimeUnit
 fun DashboardScreen(
     viewModel: StudyViewModel,
     onOpenSubjects: () -> Unit,
-    onStartTimer: (subject: String, topic: String) -> Unit
+    onStartTimer: (subject: String, topic: String) -> Unit,
+    onOpenAITeacher: () -> Unit
 ) {
 
     val profile by viewModel.profile.collectAsState()
@@ -52,16 +53,11 @@ fun DashboardScreen(
     }
 
 
-
-    // LIVE MASTERY DATA
-
     val biologyMastery =
         viewModel.getMastery("Biology")
 
-
     val physicsMastery =
         viewModel.getMastery("Physics")
-
 
     val mathematicsMastery =
         viewModel.getMastery("Mathematics")
@@ -87,11 +83,26 @@ fun DashboardScreen(
         )
 
 
-
         Spacer(
-            Modifier.height(16.dp)
+            Modifier.height(15.dp)
         )
 
+
+        Button(
+            onClick = {
+                onOpenAITeacher()
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+
+            Text("🤖 Open AI Teacher")
+
+        }
+
+
+        Spacer(
+            Modifier.height(15.dp)
+        )
 
 
         Card(
@@ -108,7 +119,7 @@ fun DashboardScreen(
                 )
 
 
-                if(nextExam != null) {
+                if(nextExam != null){
 
                     Text(
                         "$daysToExam DAYS REMAINING",
@@ -149,63 +160,21 @@ fun DashboardScreen(
             ) {
 
                 Text(
-                    "🎯 TODAY'S MISSION",
-                    fontWeight = FontWeight.Bold
-                )
-
-
-                Text(
-                    "Complete your highest priority topic"
-                )
-
-
-                Text(
-                    "Recommended time: 18:00 - 19:00"
-                )
-
-            }
-
-        }
-
-
-
-        Spacer(
-            Modifier.height(15.dp)
-        )
-
-
-
-        Card(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-
-            Column(
-                Modifier.padding(16.dp)
-            ) {
-
-                Text(
                     "📊 ESTIMATED MASTERY",
                     fontWeight = FontWeight.Bold
                 )
 
 
                 Text(
-                    "Biology       ${biologyMastery.toInt()}%"
+                    "Biology: ${biologyMastery.toInt()}%"
                 )
 
-
                 Text(
-                    "Physics       ${physicsMastery.toInt()}%"
+                    "Physics: ${physicsMastery.toInt()}%"
                 )
 
-
                 Text(
-                    "Mathematics   ${mathematicsMastery.toInt()}%"
-                )
-
-
-                Text(
-                    "Based on quizzes, past papers and consistency"
+                    "Mathematics: ${mathematicsMastery.toInt()}%"
                 )
 
             }
@@ -223,8 +192,7 @@ fun DashboardScreen(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-
+        ){
 
             Text(
                 "📚 SUBJECTS",
@@ -234,7 +202,7 @@ fun DashboardScreen(
 
             TextButton(
                 onClick = onOpenSubjects
-            ) {
+            ){
 
                 Text("Manage")
 
@@ -246,18 +214,16 @@ fun DashboardScreen(
 
         LazyColumn(
             modifier = Modifier.weight(1f)
-        ) {
+        ){
 
-
-            items(subjects) { subject ->
+            items(subjects){ subject ->
 
 
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 6.dp)
-                ) {
-
+                ){
 
                     Row(
                         modifier = Modifier
@@ -265,11 +231,9 @@ fun DashboardScreen(
                             .padding(16.dp),
 
                         horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-
+                    ){
 
                         Column {
-
 
                             Text(
                                 subject.name,
@@ -294,7 +258,7 @@ fun DashboardScreen(
                                 )
 
                             }
-                        ) {
+                        ){
 
                             Text("START")
 
@@ -304,14 +268,11 @@ fun DashboardScreen(
 
                 }
 
-
             }
-
 
         }
 
-
     }
 
-
-}
+}                    
+                        
