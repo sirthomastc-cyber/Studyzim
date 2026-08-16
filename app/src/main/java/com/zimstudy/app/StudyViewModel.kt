@@ -13,6 +13,8 @@ import com.zimstudy.app.data.PerformanceRepository
 import com.zimstudy.app.data.StudentProfile
 import com.zimstudy.app.data.StudySession
 import com.zimstudy.app.data.SubjectEntity
+import com.zimstudy.app.planner.AdaptivePlanner
+import com.zimstudy.app.planner.StudyRecommendation
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -23,6 +25,7 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
 
     private val db = AppDatabase.getInstance(application)
 
+
     private val profileDao = db.studentProfileDao()
     private val subjectDao = db.subjectDao()
     private val examDao = db.examEntryDao()
@@ -30,7 +33,9 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
 
 
 
-    // Analytics system
+    // ==========================
+    // ANALYTICS SYSTEM
+    // ==========================
 
     private val performanceRepository =
         PerformanceRepository()
@@ -42,6 +47,20 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
         )
 
 
+    // ==========================
+    // ADAPTIVE STUDY PLANNER
+    // ==========================
+
+    private val adaptivePlanner =
+        AdaptivePlanner(
+            performanceRepository
+        )
+
+
+
+    // ==========================
+    // DATABASE FLOWS
+    // ==========================
 
     val profile = profileDao.getProfile()
         .stateIn(
@@ -68,6 +87,10 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
 
 
 
+    // ==========================
+    // CURRENT STUDY SESSION
+    // ==========================
+
     var currentSubject by mutableStateOf("General")
         private set
 
@@ -88,6 +111,10 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
+
+    // ==========================
+    // PROFILE
+    // ==========================
 
     fun saveProfile(
         name: String,
@@ -115,6 +142,10 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
+
+    // ==========================
+    // SUBJECTS
+    // ==========================
 
     fun addSubject(
         name: String
@@ -153,6 +184,10 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
 
 
 
+    // ==========================
+    // EXAMS
+    // ==========================
+
     fun addExam(
         subjectName: String,
         paperNumber: String,
@@ -177,6 +212,10 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
 
 
 
+    // ==========================
+    // STUDY SESSIONS
+    // ==========================
+
     fun logCompletedSession(
         subjectName: String,
         topic: String,
@@ -190,8 +229,11 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
                 StudySession(
                     subjectName = subjectName,
                     topic = topic,
-                    startedAtMillis = System.currentTimeMillis(),
+                    startedAtMillis =
+                    System.currentTimeMillis(),
+
                     durationMinutes = durationMinutes,
+
                     completed = true
                 )
 
@@ -203,15 +245,19 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
 
 
 
-    // NEW: Mastery connection
+    // ==========================
+    // MASTERY SYSTEM
+    // ==========================
 
     fun getMastery(
         subjectName: String
     ): Double {
 
-        return masteryService.getSubjectMastery(
-            subjectName
-        )
+
+        return masteryService
+            .getSubjectMastery(
+                subjectName
+            )
 
     }
 
@@ -221,10 +267,29 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
         subjectName: String
     ): String {
 
-        return masteryService.getSubjectGrade(
-            subjectName
-        )
+
+        return masteryService
+            .getSubjectGrade(
+                subjectName
+            )
 
     }
 
-}                 
+
+
+    // ==========================
+    // AI STUDY PLANNER
+    // ==========================
+
+    fun getNextStudyMission(): StudyRecommendation {
+
+
+        return adaptivePlanner
+            .generatePlan(
+                60
+            )
+
+    }
+
+
+}
