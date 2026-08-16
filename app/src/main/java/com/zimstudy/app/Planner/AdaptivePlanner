@@ -1,20 +1,24 @@
 package com.zimstudy.app.planner
 
+import com.zimstudy.app.data.ExamEntry
 import com.zimstudy.app.data.PerformanceRepository
 import com.zimstudy.app.data.StudyAnalytics
 import com.zimstudy.app.data.StudySession
+import com.zimstudy.app.exam.ExamIntelligence
 
 
 class AdaptivePlanner(
     private val repository: PerformanceRepository,
-    private val studyAnalytics: StudyAnalytics = StudyAnalytics()
+    private val studyAnalytics: StudyAnalytics = StudyAnalytics(),
+    private val examIntelligence: ExamIntelligence = ExamIntelligence()
 ) {
 
 
 
     fun generatePlan(
         availableMinutes: Int,
-        sessions: List<StudySession> = emptyList()
+        sessions: List<StudySession> = emptyList(),
+        exams: List<ExamEntry> = emptyList()
     ): StudyRecommendation {
 
 
@@ -26,15 +30,14 @@ class AdaptivePlanner(
 
         if(records.isEmpty()) {
 
-
             return StudyRecommendation(
 
                 subject = "General",
 
-                topic = "Syllabus Setup",
+                topic = "Syllabus Review",
 
                 reason =
-                "AI needs more learning data.",
+                "AI needs more performance data.",
 
                 durationMinutes = availableMinutes
 
@@ -45,17 +48,59 @@ class AdaptivePlanner(
 
 
         val prioritySubject =
-            records.maxByOrNull {
+            records.maxByOrNull { record ->
 
 
-                calculatePriority(
-                    it.quizAccuracy,
-                    it.pastPaperAccuracy,
-                    it.consistency,
+
+                val mastery =
+                    (
+                    record.quizAccuracy +
+                    record.pastPaperAccuracy +
+                    record.consistency
+                    ) / 3
+
+
+
+                val weakness =
+                    100 - mastery
+
+
+
+                val studyFrequency =
                     studyAnalytics.calculateStudyFrequency(
                         sessions,
-                        it.subjectName
+                        record.subjectName
                     )
+
+
+
+                val lackOfPractice =
+                    100 -
+                    (studyFrequency * 10)
+                        .coerceIn(0.0,100.0)
+
+
+
+                val exam =
+                    exams.find {
+                        it.subjectName ==
+                        record.subjectName
+                    }
+
+
+
+                val urgency =
+                    exam?.let {
+                        examIntelligence
+                            .calculateUrgency(it)
+                    } ?: 0.0
+
+
+
+                (
+                weakness * 0.5 +
+                lackOfPractice * 0.2 +
+                urgency * 0.3
                 )
 
             }
@@ -64,62 +109,23 @@ class AdaptivePlanner(
 
         return StudyRecommendation(
 
-            subject = prioritySubject!!.subjectName,
+            subject =
+            prioritySubject!!.subjectName,
 
-            topic = "Targeted Revision",
+
+            topic =
+            "Exam Priority Revision",
+
 
             reason =
-            "AI selected this because your mastery and study activity show it needs attention.",
+            "AI selected this using mastery, study behaviour and exam urgency.",
 
-            durationMinutes = availableMinutes
+
+            durationMinutes =
+            availableMinutes
 
         )
 
-
     }
-
-
-
-
-    private fun calculatePriority(
-
-        quizAccuracy: Double,
-
-        pastPaperAccuracy: Double,
-
-        consistency: Double,
-
-        studyFrequency: Double
-
-    ): Double {
-
-
-        val mastery =
-            (
-            quizAccuracy +
-            pastPaperAccuracy +
-            consistency
-            ) / 3
-
-
-
-        val weakness =
-            100 - mastery
-
-
-
-        val lackOfPractice =
-            100 - (studyFrequency * 10)
-                .coerceIn(0.0,100.0)
-
-
-
-        return (
-                weakness * 0.7 +
-                lackOfPractice * 0.3
-                )
-
-    }
-
 
 }
