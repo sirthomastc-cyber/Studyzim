@@ -309,4 +309,27 @@ class StudyViewModel(
     }
 
 
+    fun getNextStudyMission(): String {
+
+    val currentSubjects = subjects.value
+
+
+    val nextSubject =
+        currentSubjects.firstOrNull()
+
+
+
+    return if (nextSubject != null) {
+
+        "Revise ${nextSubject.name}"
+
+    } else {
+
+        "Add subjects to create your AI study mission"
+
+    }
+
+    }
+
+
 }
