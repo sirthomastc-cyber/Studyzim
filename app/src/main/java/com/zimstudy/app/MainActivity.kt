@@ -163,12 +163,13 @@ class MainActivity : ComponentActivity() {
 
 
 
-                        composable("ai_teacher") {
+                  composable("ai_teacher") {
 
+    AITeacherScreen(
+        viewModel = viewModel
+    )
 
-                            AITeacherScreen()
-
-                        }
+}  
 
 
 
