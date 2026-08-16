@@ -1,16 +1,26 @@
 package com.zimstudy.app.ui
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.zimstudy.app.StudyViewModel
-import com.zimstudy.app.ai.*
-import kotlinx.coroutines.launch
+import com.zimstudy.app.ai.OfflineAIService
 
 
 @Composable
@@ -18,420 +28,137 @@ fun AITeacherScreen(
     viewModel: StudyViewModel
 ) {
 
+
     var question by remember {
         mutableStateOf("")
     }
 
-    var selectedMode by remember {
-        mutableStateOf(AIMode.TEACH)
-    }
 
-    var selectedSubject by remember {
-        mutableStateOf("General")
-    }
-
-    var selectedTopic by remember {
-        mutableStateOf("General Revision")
+    var answer by remember {
+        mutableStateOf(
+            "Ask me anything about your subjects."
+        )
     }
 
 
-    val subjects by viewModel.subjects.collectAsState()
 
-
-    val topics =
-        TopicRepository.getTopics(selectedSubject)
-
-
-    val messages =
+    val aiService =
         remember {
-            mutableStateListOf<AIMessage>()
+            OfflineAIService()
         }
 
-
-    val scope =
-        rememberCoroutineScope()
-
-
-    val ai =
-        OfflineAIService()
-
-
-
-    val context =
-        StudyContext(
-            subject = selectedSubject,
-            level = "ZIMSEC O-Level",
-            topic = selectedTopic
-        )
 
 
 
     Column(
-        modifier =
-        Modifier
+
+        modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(20.dp)
+
     ) {
 
 
-        Text(
-            "🤖 ZIMStudy AI Teacher",
-            style = MaterialTheme.typography.headlineSmall
-        )
-
-
-        Spacer(
-            Modifier.height(10.dp)
-        )
-
 
         Text(
-            "Subject: $selectedSubject"
+
+            text = "🤖 ZIMStudy AI Teacher",
+
+            style =
+            MaterialTheme.typography.headlineMedium
+
         )
-
-
-        LazyRow {
-
-            items(subjects) { subject ->
-
-                Button(
-
-                    onClick = {
-
-                        selectedSubject =
-                            subject.name
-
-                        selectedTopic =
-                            "General Revision"
-
-                    },
-
-                    modifier =
-                    Modifier.padding(4.dp)
-
-                ) {
-
-                    Text(subject.name)
-
-                }
-
-            }
-
-        }
 
 
 
         Spacer(
-            Modifier.height(10.dp)
+            Modifier.height(20.dp)
         )
 
 
 
-        Text(
-            "Topic: $selectedTopic"
-        )
+        Card(
 
-
-
-        LazyRow {
-
-            items(topics) { topic ->
-
-
-                Button(
-
-                    onClick = {
-
-                        selectedTopic =
-                            topic.name
-
-                    },
-
-                    modifier =
-                    Modifier.padding(4.dp)
-
-                ) {
-
-                    Text(topic.name)
-
-                }
-
-            }
-
-        }
-
-
-
-
-        Spacer(
-            Modifier.height(10.dp)
-        )
-
-
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement =
-            Arrangement.SpaceBetween
-        ) {
-
-
-            Button(
-                onClick = {
-                    selectedMode =
-                        AIMode.TEACH
-                }
-            ) {
-                Text("Teach")
-            }
-
-
-
-            Button(
-                onClick = {
-                    selectedMode =
-                        AIMode.EXAM
-                }
-            ) {
-                Text("Exam")
-            }
-
-
-
-            Button(
-                onClick = {
-                    selectedMode =
-                        AIMode.EXPLAIN_MISTAKE
-                }
-            ) {
-                Text("Mistake")
-            }
-
-
-        }
-
-
-
-
-
-        LazyColumn(
-
-            modifier =
-            Modifier
-                .weight(1f)
-                .fillMaxWidth()
-
-        ) {
-
-
-            items(messages) { message ->
-
-
-                Card(
-
-                    modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(5.dp)
-
-                ) {
-
-
-                    Text(
-
-                        text =
-                        if(message.fromUser)
-
-                            "You:\n${message.text}"
-
-                        else
-
-                            "AI Teacher:\n${message.text}",
-
-
-                        modifier =
-                        Modifier.padding(12.dp)
-
-                    )
-
-                }
-
-
-            }
-
-        }
-
-
-
-
-
-        Row(
             modifier =
             Modifier.fillMaxWidth()
+
         ) {
 
 
-            OutlinedTextField(
+            Text(
 
-                value = question,
-
-                onValueChange = {
-                    question = it
-                },
-
-                label = {
-                    Text("Ask your teacher")
-                },
+                text = answer,
 
                 modifier =
-                Modifier.weight(1f)
+                Modifier.padding(16.dp)
 
             )
 
+        }
 
 
-            Spacer(
-                Modifier.width(8.dp)
-            )
 
+        Spacer(
+            Modifier.height(20.dp)
+        )
 
 
-            Button(
 
-                onClick = {
+        OutlinedTextField(
 
+            value = question,
 
-                    if(question.isNotBlank()) {
+            onValueChange = {
 
+                question = it
 
-                        val userQuestion =
-                            question
+            },
 
+            modifier =
+            Modifier.fillMaxWidth(),
 
-                        messages.add(
+            label = {
 
-                            AIMessage(
-
-                                text = userQuestion,
-
-                                fromUser = true,
-
-                                mode = selectedMode
-
-                            )
-
-                        )
-
-
-                        question = ""
-
-
-
-                        scope.launch {
-
-
-                            val answer =
-
-
-                                if(selectedMode == AIMode.EXAM) {
-
-
-                                    val examiner =
-                                        AIExaminerService()
-
-
-
-                                    val examQuestion =
-                                        examiner.generateQuestion(
-
-                                            selectedSubject,
-
-                                            selectedTopic
-
-                                        )
-
-
-
-                                    """
-                                    📝 ZIMSEC EXAM QUESTION
-                                    
-                                    Subject:
-                                    ${examQuestion.subject}
-                                    
-                                    Topic:
-                                    ${examQuestion.topic}
-                                    
-                                    Marks:
-                                    ${examQuestion.marks}
-                                    
-                                    Difficulty:
-                                    ${examQuestion.difficulty}
-                                    
-                                    Question:
-                                    ${examQuestion.questionText}
-                                    
-                                    Answer when ready.
-                                    """.trimIndent()
-
-
-
-                                } else {
-
-
-                                    ai.askAI(
-
-                                        question =
-                                        userQuestion,
-
-
-                                        context =
-                                        context,
-
-
-                                        mode =
-                                        selectedMode
-
-                                    )
-
-                                }
-
-
-
-
-                            messages.add(
-
-                                AIMessage(
-
-                                    text = answer,
-
-                                    fromUser = false,
-
-                                    mode = selectedMode
-
-                                )
-
-                            )
-
-
-                        }
-
-
-                    }
-
-
-                }
-
-            ) {
-
-                Text("Send")
+                Text("Ask your question")
 
             }
 
+        )
+
+
+
+        Spacer(
+            Modifier.height(15.dp)
+        )
+
+
+
+        Button(
+
+            onClick = {
+
+
+                answer =
+                    aiService.askAI(
+                        question
+                    )
+
+
+            },
+
+            modifier =
+            Modifier.fillMaxWidth()
+
+        ) {
+
+
+            Text(
+                "Ask AI"
+            )
 
         }
 
 
     }
-
 
 }
